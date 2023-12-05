@@ -1,9 +1,10 @@
-import Test from "@/components/Test"
+import Main from '@/pages/Main'
+
 
 export default function Home() {
   return (
     <main>
-      <Test></Test>
+      <Main></Main>
     </main>
   )
 }
