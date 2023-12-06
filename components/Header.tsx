@@ -1,11 +1,9 @@
-import React from 'react'
-// import '@/styles/Header'
+import NavBar from "@/components/NavBar"
 
 const Header = () => {
   return (
     <header>
-        <h1 className='logo'>EcoBusTravel</h1>
-        <button className='loginBtn'>Log In</button>
+      <NavBar/>
     </header>
   )
 }
