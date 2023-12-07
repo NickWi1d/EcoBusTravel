@@ -1,27 +1,169 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+*{
+  margin: 0px;
+}
+header{
+  height: 80px;
+  /* background-color: #6DB935; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo{
+  color: #6DB935;
+  margin-left: 20px;
+}
+.loginBtn{
+  background-color: #6DB935;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  margin: 8px 20px;
+  border: none;
+  cursor: pointer;
+  width: 7%;
+  opacity: 0.9;
+  font-size: 15px;
+  border-radius: 5px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* Блок с поиском поездок */
+.SearchSection{
+  height: 344px;
+  background-image: url(../public/bronirovanie-biletov-na-avtobus-onlajn-otvety-na-7-voprosov.png);
+  background-position:center;
+  display: flex;
+  background-repeat: no-repeat;
+  flex-direction: column;
+  justify-content: space-evenly;  
+  align-items: flex-start;
+
+}
+/* .SearchSectionActive{
+  background: #033754;
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  padding-top: 25px;
+  justify-content: center;  
+  align-items: flex-start;
+}
+.SearchTitleDisable{
+  display: none;
+} */
+.SearchTitle{
+  height: 50%;
+}
+.SearchTitle > h2{
+  margin: 0;
+  font-size: 40px;          
+  color: white;
+  margin-left: 35px;
+}
+.SearchTitle  > h4{
+  margin: 0;
+  margin-top: 15px;
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.79);
+  text-align: left;
+  margin-left: 35px;
+}
+.SearchForm{
+  display: flex;
+  /* margin-left: 35px; */
+  width: 100%;
+  height: 50px;
+}
+.inputSection{
+  width: 20%;
+  height: 100%;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.inputSection:first-child{
+  margin-left: 35px;
+}
+
+#from{
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+} 
+label{
+  display: block;
+  font-size: 15px;
+  padding-right: 230px;
+  color: rgba(8, 41, 59, 0.38);
+}
+.label-text{
+  transform: translate(15px, -35px);
+  transition: all 0.5s
+}
+.requiredField:focus + .label-text{
+  transform: translate(-10px, -55px) scale(0.85);
+  transition: all 0.5s;
+}
+.requiredField:valid + .label-text{
+  transform: translate(-10px, -55px) scale(0.85);
+}
+.requiredField{
+  outline: none;
+  border: none;
+  margin-right: 5px;
+  width: 96.6%;
+  height: 30px;
+  font-size: 18px;
+  padding-top: 20px;
+  padding-left: 11px;
+  padding-bottom: 10px;
+}
+
+.inputSection > select{
+  height: 100%;
+}
+#to, #from{
+  width: 100%;
+}
+#date{
+  padding-right:10px;
+  width: 95%;
+}
+#amount{
+  padding-left: 5px;
+  width: 100%;
+  height: 120%;
+}
+#to{
+  padding-right: 250px;
+}
+#dateLabel{
+  transform:none;
+  padding-right: 0px;
+  transform: translate(-10px, -55px) scale(0.85);
+  /* font-size: 10px; */
+}
+#amountLabel{
+  padding-right: 200px;
+}
+.hr{
+  width: 2px solid;
+  height: 40px;
+  color: rgba(3, 44, 59, 0.16);
+  margin: 0;
+  margin-top: 10px;
+}
+.buttunWrap{
+  width: 15%;
+  height: 100%;
+}
+.searchButton{
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border: none;
+  width: 100%;
+  height: 120%;
+  background-color: #6DB935;
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+}
+.searchButton:hover{
+  background-color: #68b133;
 }
