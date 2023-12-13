@@ -1,18 +1,45 @@
 "use client";
-import React, { useRef } from 'react'
+import React, { useState } from 'react'
 
-const SearchTrips = () => {
-    const fromInput = useRef<HTMLInputElement>(null)
-    const toInput = useRef<HTMLInputElement>(null)
-    const dateInput = useRef<HTMLInputElement>(null)
-    const amountOfUsersInput = useRef<HTMLSelectElement>(null)
+import { useDispatch, useSelector } from 'react-redux';
+import { setFrom, setTo, setDate, setAmount } from '@/redux/formSlice'
+import { RootState } from '@/redux/store'
+
+const SearchTrips: React.FC = () => {
+    const { from, to, date, amount } = useSelector((state: RootState) => state.form);
+    const dispatch = useDispatch();
+  
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement| HTMLSelectElement>) => {
+        const { name, value } = event.target;
+        switch (name) {
+          case 'from':
+            dispatch(setFrom(value));
+            break;
+          case 'to':
+            dispatch(setTo(value));
+            break;
+          case 'date':
+            dispatch(setDate(value));
+            break;
+          case 'amount':
+            dispatch(setAmount(value));
+            break;
+          default:
+            break;
+        }
+      };
+    
+      const handleSubmit = () => {
+        console.log([from, to, date, amount])
+      };
+
+    // const [fromInput, setFromInput] = useState('')
+    // const [toInput, setToInput] = useState('')
+    // const [dateInput, setDateInput] = useState('2023-12-13')
+    // const [amountOfUsersInput, setAmountOfUsersInput] = useState('1')
+
     function cl() {
-        console.log({
-            'Откуда': fromInput.current?.value,
-            'Куда': toInput.current?.value,
-            'Дата': dateInput.current?.value,
-            'Количество ': amountOfUsersInput.current?.value
-        })
+        
     }
     return (
         <div className='SearchSection'>
@@ -23,9 +50,10 @@ const SearchTrips = () => {
             <form className='SearchForm'>
                 <div className='inputSection'>
                     <input
-                        ref={fromInput}
                         className='requiredField'
                         onFocus={(e) => e.target.select()}
+                        value={from}
+                        onChange={handleInputChange}
                         type='text'
                         id='from'
                         required
@@ -35,9 +63,10 @@ const SearchTrips = () => {
                 <hr className='hr' />
                 <div className='inputSection'>
                     <input
-                        ref={toInput}
                         className='requiredField'
                         onFocus={(e) => e.target.select()}
+                        value={to}
+                        onChange={handleInputChange}
                         type='text'
                         id='to'
                         required
@@ -47,8 +76,9 @@ const SearchTrips = () => {
                 <hr className='hr' />
                 <div className='inputSection'>
                     <input
-                        ref={dateInput}
                         className='requiredField'
+                        value={date}
+                        onChange={handleInputChange}
                         type='date'
                         id='date'
                         required
@@ -58,8 +88,9 @@ const SearchTrips = () => {
                 <hr className='hr' />
                 <div className='inputSection'>
                     <select
-                        ref={amountOfUsersInput}
                         className='requiredField'
+                        value={amount}
+                        onChange={handleInputChange}
                         typeof='text'
                         id='amount'
                         required
@@ -77,7 +108,7 @@ const SearchTrips = () => {
                         type="button"
                         className='searchButton'
                         value="Найти"
-                        onClick={cl}
+                        onClick={handleSubmit}
                     />
                 </div>
             </form>
