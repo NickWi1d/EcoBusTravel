@@ -1,14 +1,20 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
 import Filter from '@/components/Filter'
-import { usePathname } from 'next/navigation';
+import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux';
+
+
 
 const SearchResults = () => {
-  const pathname = usePathname();
+	const info = useSelector((state: RootState) => state.searchParams);
   return (
     <div>
-        <Filter/>
-        {pathname}
+        {/* <Filter/>	 */}
+		Откуда: {info.from}
+		Куда: {info.to}
+		Дата: {info.date}
+		Кол-во человек: {info.amount}
     </div>
   )
 }

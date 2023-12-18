@@ -1,19 +1,27 @@
 "use client";
-import React, { useRef } from 'react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import {getDateFromDB} from '@/lib/actionsDB'
+import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux';
 
-const SearchTrips = () => {
-    const fromInput = useRef<HTMLInputElement>(null)
-    const toInput = useRef<HTMLInputElement>(null)
-    const dateInput = useRef<HTMLInputElement>(null)
-    const amountOfUsersInput = useRef<HTMLSelectElement>(null)
-    function cl() {
-        console.log({
-            'Откуда': fromInput.current?.value,
-            'Куда': toInput.current?.value,
-            'Дата': dateInput.current?.value,
-            'Количество ': amountOfUsersInput.current?.value
-        })
-    }
+const SearchTrips: React.FC = () => {
+    const dispatch = useDispatch();
+    const information = useSelector((state: RootState) => state.searchResults);
+    const handleSubmit = () => {
+        getDateFromDB(dispatch, {from:'Минск'})
+
+        setTimeout(() => {
+            console.log(information)
+        }, 5000);
+    };
+    const [searchInfo, setSearchInfo] = useState({
+        from: '',
+        to: '',
+        date: '2023-12-13',
+        amount: '1'
+    })
+
     return (
         <div className='SearchSection'>
             <div className='SearchTitle'>
@@ -23,9 +31,13 @@ const SearchTrips = () => {
             <form className='SearchForm'>
                 <div className='inputSection'>
                     <input
-                        ref={fromInput}
                         className='requiredField'
                         onFocus={(e) => e.target.select()}
+                        value={searchInfo.from}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            from: e.target.value
+                          })}
                         type='text'
                         id='from'
                         required
@@ -35,9 +47,13 @@ const SearchTrips = () => {
                 <hr className='hr' />
                 <div className='inputSection'>
                     <input
-                        ref={toInput}
                         className='requiredField'
                         onFocus={(e) => e.target.select()}
+                        value={searchInfo.to}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            to: e.target.value
+                          })}
                         type='text'
                         id='to'
                         required
@@ -47,8 +63,12 @@ const SearchTrips = () => {
                 <hr className='hr' />
                 <div className='inputSection'>
                     <input
-                        ref={dateInput}
                         className='requiredField'
+                        value={searchInfo.date}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            date: e.target.value
+                          })}
                         type='date'
                         id='date'
                         required
@@ -58,8 +78,12 @@ const SearchTrips = () => {
                 <hr className='hr' />
                 <div className='inputSection'>
                     <select
-                        ref={amountOfUsersInput}
                         className='requiredField'
+                        value={searchInfo.amount}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            amount: e.target.value
+                          })}
                         typeof='text'
                         id='amount'
                         required
@@ -77,7 +101,7 @@ const SearchTrips = () => {
                         type="button"
                         className='searchButton'
                         value="Найти"
-                        onClick={cl}
+                        onClick={handleSubmit}
                     />
                 </div>
             </form>
