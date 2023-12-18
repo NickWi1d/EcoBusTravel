@@ -1,9 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
-import formReducer from './formSlice'
+import searchParamsReducer from './searchParamsSlice'
+import searchResultsReducer from './searchResultsSlice'
+import authReducer from './authSlice';
 
 const store = configureStore({
   reducer: {
-    form: formReducer,
+    searchParams: searchParamsReducer,
+    searchResults: searchResultsReducer,
+    auth:authReducer
   },
 });
 
@@ -12,29 +16,3 @@ export type AppDispatch = typeof store.dispatch;
 
 export default store;
 
-// const initialState = {
-//   busTrips: [],
-// };
-
-// const reducer = (state = initialState, action) => {
-//   switch (action.type) {
-//     case 'SET_BUS_TRIPS':
-//       return {
-//         ...state,
-//         busTrips: action.payload,
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
-// export const setBusTrips = (busTrips) => ({
-//   type: 'SET_BUS_TRIPS',
-//   payload: busTrips,
-// });
-
-// const store = configureStore({
-//   reducer,
-// });
-
-// export default store;

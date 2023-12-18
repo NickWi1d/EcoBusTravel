@@ -1,26 +1,34 @@
-import React from 'react'
+import React, { FC, useState } from 'react'
 import Link from 'next/link'
-import styles from '@/styles/Auth.module.scss'
 import { symlink } from 'fs'
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { logIn } from '@/redux/authSlice'
+import RegistrationForm from '@/components/RegistrationForm';
 
-const SignUp = () => {
+const SignUp: FC = () => {
+  const dispatch = useDispatch();
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  function LogIn() {
+    dispatch(logIn({
+      // token: 'LOGGED',
+      isLoggedIn: true,
+      user: null
+    }))
+    router.push('/PersonalAccount')
+  }
+
   return (
-    <form className={styles.signUpForm}>
-    <h1>Зарегистрироваться</h1>
-    <p>Пожалуйста заполните эту форму, что бы создать учетётную запись</p>
-    {/* {error && <>{error}</>} */}
-    {/* <hr /> */}
-    <label htmlFor="email"><b>Email</b></label>
-    <input type="email" name="email" className={styles.emailInput} placeholder="Введите email" required />
-
-    <label htmlFor="password"><b>Пароль</b></label>
-    <input type="password" name="password" className={styles.passwordInput} placeholder="Введите пароль" required/>
-
-    <button type="submit" className={styles.SignUpBtn}>Зарегистрироваться</button>
-    <div>
-      <p>Уже есть аккаунт? <Link href='/LogIn'>Войти</Link></p>
-    </div>
-  </form>
+    <RegistrationForm
+      onLogIn={LogIn}
+      params={{ Header: 'Зарегистрироваться', LinkText: 'Войти', text: 'Пожалуйста заполните эту форму, что бы создать учетётную запись', }}
+      email={email}
+      setEmail={setEmail}
+      password={password}
+      setPassword={setPassword}
+    />
   )
 }
 

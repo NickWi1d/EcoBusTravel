@@ -1,33 +1,35 @@
 "use client";
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store'
+
+
 
 const NavBar = () => {
-    const router = useRouter()
-    const [accountToken, setAccountToken] = useState('NOT_LOGGED')
-    function openPersonalAccount() {
-      switch (accountToken) {
-        case 'LOGGED':
-          router.push('/LogIn')
-          break;
-        case 'NOT_LOGGED':
-          router.push('/SignUp')
-          break;
-        case 'LOGGED_AND_SAVED':
-          router.push('/PersonalAccount')
-          break;
-        default:
-          break;
-      }
+  const router = useRouter()
+  let accountToken = useSelector((state: RootState) => state.auth.isLoggedIn)
+  const actionBtn = accountToken == true ? 'Personal Account' :  'Log In'
+  function openPersonalAccount() {
+    switch (accountToken) {
+      case false:
+        router.push('/LogInAndSignUp')
+        break;
+      case true:
+        router.push('/PersonalAccount')
+        break;
+      default:
+        break;
     }
-    return (
-        <>
-            <h1 className='logo'>EcoBusTravel</h1>
-            <Link href='/SearchResults'>SearchResults</Link>
-            <button className='loginBtn' onClick={openPersonalAccount}>Log In</button>
-        </>
-    )
+  }
+  return (
+    <>
+      <h1 className='logo'>EcoBusTravel</h1>
+      <Link href='/SearchResults'>SearchResults</Link>
+      <button className='loginBtn' onClick={openPersonalAccount}>{actionBtn}</button>
+    </>
+  )
 }
 
 export default NavBar

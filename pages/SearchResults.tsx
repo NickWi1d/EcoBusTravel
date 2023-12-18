@@ -1,41 +1,20 @@
 'use client';
 import React, { useState } from 'react'
 import Filter from '@/components/Filter'
-import { useDispatch } from 'react-redux';
-import { addTodo } from '../redux/todoSlice';
+import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux';
+
 
 
 const SearchResults = () => {
-  const [value, setValue] = useState('');
-	const dispatch = useDispatch();
-
-	const onSubmit = (event:any) => {
-		event.preventDefault();
-		if (value) {
-			dispatch(
-				addTodo({
-					title: value,
-				})
-			);
-		}
-	};
+	const info = useSelector((state: RootState) => state.searchParams);
   return (
     <div>
-        {/* <Filter/> */}
-        <form onSubmit={onSubmit} className='form-inline mt-3 mb-3'>
-			<label className='sr-only'>Name</label>
-			<input
-				type='text'
-				className='form-control mb-2 mr-sm-2'
-				placeholder='Add todo...'
-				value={value}
-				onChange={(event) => setValue(event.target.value)}
-			></input>
-
-			<button type='submit' className='btn btn-primary mb-2'>
-				Submit
-			</button>
-		</form>
+        {/* <Filter/>	 */}
+		Откуда: {info.from}
+		Куда: {info.to}
+		Дата: {info.date}
+		Кол-во человек: {info.amount}
     </div>
   )
 }

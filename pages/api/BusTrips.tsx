@@ -4,9 +4,9 @@ import { connectToDatabase, closeDatabaseConnection } from '../../lib/mongodb'
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const db = await connectToDatabase();
+  if (req.method === 'PUT') {
     try {
+      const db = await connectToDatabase();
       const collection = db.collection('BusTrips'); // Choose a name for your collection
       await collection.insertOne(req.body);
       res.status(201).json({ message: 'Data saved successfully!' });
@@ -15,8 +15,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } finally {
       closeDatabaseConnection()
     }
-  } else {
-    res.status(405).json({ message: 'Method not allowed!' });
+  }
+  if (req.method === 'POST') {
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('BusTrips');
+      
+      const busTrips = await collection.find(req.body).toArray();
+  
+      res.status(200).json({ busTrips });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }finally{
+      closeDatabaseConnection()
+    }
   }
 
 }

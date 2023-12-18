@@ -1,46 +1,27 @@
 "use client";
 import React, { useState } from 'react'
-
-import { useDispatch, useSelector } from 'react-redux';
-import { setFrom, setTo, setDate, setAmount } from '@/redux/formSlice'
+import { useDispatch } from 'react-redux';
+import {getDateFromDB} from '@/lib/actionsDB'
 import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux';
 
 const SearchTrips: React.FC = () => {
-    const { from, to, date, amount } = useSelector((state: RootState) => state.form);
     const dispatch = useDispatch();
-  
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement| HTMLSelectElement>) => {
-        const { name, value } = event.target;
-        switch (name) {
-          case 'from':
-            dispatch(setFrom(value));
-            break;
-          case 'to':
-            dispatch(setTo(value));
-            break;
-          case 'date':
-            dispatch(setDate(value));
-            break;
-          case 'amount':
-            dispatch(setAmount(value));
-            break;
-          default:
-            break;
-        }
-      };
-    
-      const handleSubmit = () => {
-        console.log([from, to, date, amount])
-      };
+    const information = useSelector((state: RootState) => state.searchResults);
+    const handleSubmit = () => {
+        getDateFromDB(dispatch, {from:'Минск'})
 
-    // const [fromInput, setFromInput] = useState('')
-    // const [toInput, setToInput] = useState('')
-    // const [dateInput, setDateInput] = useState('2023-12-13')
-    // const [amountOfUsersInput, setAmountOfUsersInput] = useState('1')
+        setTimeout(() => {
+            console.log(information)
+        }, 5000);
+    };
+    const [searchInfo, setSearchInfo] = useState({
+        from: '',
+        to: '',
+        date: '2023-12-13',
+        amount: '1'
+    })
 
-    function cl() {
-        
-    }
     return (
         <div className='SearchSection'>
             <div className='SearchTitle'>
@@ -52,8 +33,11 @@ const SearchTrips: React.FC = () => {
                     <input
                         className='requiredField'
                         onFocus={(e) => e.target.select()}
-                        value={from}
-                        onChange={handleInputChange}
+                        value={searchInfo.from}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            from: e.target.value
+                          })}
                         type='text'
                         id='from'
                         required
@@ -65,8 +49,11 @@ const SearchTrips: React.FC = () => {
                     <input
                         className='requiredField'
                         onFocus={(e) => e.target.select()}
-                        value={to}
-                        onChange={handleInputChange}
+                        value={searchInfo.to}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            to: e.target.value
+                          })}
                         type='text'
                         id='to'
                         required
@@ -77,8 +64,11 @@ const SearchTrips: React.FC = () => {
                 <div className='inputSection'>
                     <input
                         className='requiredField'
-                        value={date}
-                        onChange={handleInputChange}
+                        value={searchInfo.date}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            date: e.target.value
+                          })}
                         type='date'
                         id='date'
                         required
@@ -89,8 +79,11 @@ const SearchTrips: React.FC = () => {
                 <div className='inputSection'>
                     <select
                         className='requiredField'
-                        value={amount}
-                        onChange={handleInputChange}
+                        value={searchInfo.amount}
+                        onChange={(e)=>setSearchInfo({
+                            ...searchInfo,
+                            amount: e.target.value
+                          })}
                         typeof='text'
                         id='amount'
                         required
