@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 *{
   margin: 0px;
 }
@@ -29,7 +32,7 @@ header{
 /* Блок с поиском поездок */
 .SearchSection{
   height: 344px;
-  background-image: url(../public/bronirovanie-biletov-na-avtobus-onlajn-otvety-na-7-voprosov.png);
+  /* background-image: url(../public/bronirovanie-biletov-na-avtobus-onlajn-otvety-na-7-voprosov.png); */
   background-position:center;
   display: flex;
   background-repeat: no-repeat;
@@ -38,18 +41,6 @@ header{
   align-items: flex-start;
 
 }
-/* .SearchSectionActive{
-  background: #033754;
-  height: 110px;
-  display: flex;
-  flex-direction: column;
-  padding-top: 25px;
-  justify-content: center;  
-  align-items: flex-start;
-}
-.SearchTitleDisable{
-  display: none;
-} */
 .SearchTitle{
   height: 50%;
 }
@@ -69,7 +60,6 @@ header{
 }
 .SearchForm{
   display: flex;
-  /* margin-left: 35px; */
   width: 100%;
   height: 50px;
 }
@@ -81,73 +71,11 @@ header{
 .inputSection:first-child{
   margin-left: 35px;
 }
-
-#from{
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-} 
-label{
-  display: block;
-  font-size: 15px;
-  padding-right: 230px;
-  color: rgba(8, 41, 59, 0.38);
-}
-.label-text{
-  transform: translate(15px, -35px);
-  transition: all 0.5s
-}
-.requiredField:focus + .label-text{
-  transform: translate(-10px, -55px) scale(0.85);
-  transition: all 0.5s;
-}
-.requiredField:valid + .label-text{
-  transform: translate(-10px, -55px) scale(0.85);
-}
-.requiredField{
-  outline: none;
-  border: none;
-  margin-right: 5px;
+.SearchParamsInput{
   width: 96.6%;
-  height: 30px;
-  font-size: 18px;
-  padding-top: 20px;
-  padding-left: 11px;
-  padding-bottom: 10px;
 }
-
 .inputSection > select{
   height: 100%;
-}
-#to, #from{
-  width: 100%;
-}
-#date{
-  padding-right:10px;
-  width: 95%;
-}
-#amount{
-  padding-left: 5px;
-  width: 100%;
-  height: 120%;
-}
-#to{
-  padding-right: 250px;
-}
-#dateLabel{
-  transform:none;
-  padding-right: 0px;
-  transform: translate(-10px, -55px) scale(0.85);
-  /* font-size: 10px; */
-}
-#amountLabel{
-  padding-right: 200px;
-}
-.hr{
-  width: 2px solid;
-  height: 40px;
-  color: rgba(3, 44, 59, 0.16);
-  margin: 0;
-  margin-top: 10px;
 }
 .buttunWrap{
   width: 15%;
@@ -156,14 +84,14 @@ label{
 .searchButton{
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  border: none;
+  /* border: none; */
   width: 100%;
-  height: 120%;
+  height: 110%;
   background-color: #6DB935;
-  font-size: 20px;
-  color: white;
+  font-size: 15px;
+  /* color: white; */
   font-weight: bold;
 }
 .searchButton:hover{
-  background-color: #68b133;
+  background-color: #5aa723;
 }

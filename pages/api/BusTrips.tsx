@@ -12,24 +12,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(201).json({ message: 'Data saved successfully!' });
     } catch (error) {
       res.status(500).json({ message: 'Something went wrong!' });
-    } finally {
-      closeDatabaseConnection()
-    }
+    } 
+    // finally {
+    //   closeDatabaseConnection()
+    // }
   }
   if (req.method === 'POST') {
     try {
       const db = await connectToDatabase();
-      const collection = db.collection('BusTrips');
       
-      const busTrips = await collection.find(req.body).toArray();
-  
+      const busTrips = await db.collection('BusTrips').find(req.body).toArray();
+      
       res.status(200).json({ busTrips });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
-    }finally{
-      closeDatabaseConnection()
     }
+    // finally {
+    //   closeDatabaseConnection()
+    // }
   }
 
 }

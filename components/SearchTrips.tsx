@@ -1,108 +1,95 @@
 "use client";
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import {getDateFromDB} from '@/lib/actionsDB'
-import { RootState } from '@/redux/store'
-import { useSelector } from 'react-redux';
+import React, { MouseEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { TextField, Select, MenuItem, InputLabel, Button } from '@mui/material';
 
 const SearchTrips: React.FC = () => {
-    const dispatch = useDispatch();
-    const information = useSelector((state: RootState) => state.searchResults);
-    const handleSubmit = () => {
-        getDateFromDB(dispatch, {from:'Минск'})
+    const router = useRouter()
+    const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        // router.push(`/SearchResults?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(date)}&amount=${encodeURIComponent(amount)}`)
+        const params = {
+            from: from,
+            to: to,
+            date: date,
+            amount: amount,
+        }
+        const queryString = new URLSearchParams(Object.fromEntries(
+            Object.entries(params).filter(([_, value]) => value.trim() !== '')
+          ))
+        router.push(`/SearchResults?${queryString}`)
 
-        setTimeout(() => {
-            console.log(information)
-        }, 5000);
     };
-    const [searchInfo, setSearchInfo] = useState({
-        from: '',
-        to: '',
-        date: '2023-12-13',
-        amount: '1'
-    })
-
+    const [from, setFrom] = useState('Минск')
+    const [to, setTo] = useState('')
+    const [date, setDate] = useState('2023-12-13')
+    const [amount, setAmount] = useState('1')
     return (
         <div className='SearchSection'>
             <div className='SearchTitle'>
                 <h2>Купить билет на автобус</h2>
                 <h4>по Беларуси</h4>
             </div>
-            <form className='SearchForm'>
+            <form onSubmit={handleSubmit} className='SearchForm'>
                 <div className='inputSection'>
-                    <input
-                        className='requiredField'
-                        onFocus={(e) => e.target.select()}
-                        value={searchInfo.from}
-                        onChange={(e)=>setSearchInfo({
-                            ...searchInfo,
-                            from: e.target.value
-                          })}
+                    <TextField
+                        className='SearchParamsInput'
+                        // required
+                        id="from"
                         type='text'
-                        id='from'
-                        required
-                    />
-                    <label htmlFor='from' id='fromLabel' className='label-text'>Откуда?</label>
-                </div>
-                <hr className='hr' />
-                <div className='inputSection'>
-                    <input
-                        className='requiredField'
+                        label="Откуда?"
+                        variant="outlined"
+                        value={from}
+                        onChange={(e) => setFrom(e.target.value)}
                         onFocus={(e) => e.target.select()}
-                        value={searchInfo.to}
-                        onChange={(e)=>setSearchInfo({
-                            ...searchInfo,
-                            to: e.target.value
-                          })}
-                        type='text'
-                        id='to'
-                        required
                     />
-                    <label htmlFor='to' id='toLabel' className='label-text'>Куда?</label>
                 </div>
-                <hr className='hr' />
                 <div className='inputSection'>
-                    <input
-                        className='requiredField'
-                        value={searchInfo.date}
-                        onChange={(e)=>setSearchInfo({
-                            ...searchInfo,
-                            date: e.target.value
-                          })}
+                    <TextField
+                        className='SearchParamsInput'
+                        // required
+                        id="to"
+                        type='text'
+                        label="Куда?"
+                        variant="outlined"
+                        value={to}
+                        onChange={(e) => setTo(e.target.value)}
+                        onFocus={(e) => e.target.select()}
+                    />
+                </div>
+                <div className='inputSection'>
+                    <TextField
+                        className='SearchParamsInput'
+                        id="date"
                         type='date'
-                        id='date'
-                        required
+                        label="Дата"
+                        variant="outlined"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        onFocus={(e) => e.target.select()}
                     />
-                    <label htmlFor='date' id='dateLabel' className='label-text'>Дата</label>
                 </div>
-                <hr className='hr' />
                 <div className='inputSection'>
-                    <select
-                        className='requiredField'
-                        value={searchInfo.amount}
-                        onChange={(e)=>setSearchInfo({
-                            ...searchInfo,
-                            amount: e.target.value
-                          })}
-                        typeof='text'
-                        id='amount'
-                        required
+                    {/* <InputLabel id="AmountILabel">Количество</InputLabel> */}
+                    <Select
+                        className='SearchParamsInput'
+                        // labelId="AmountILabel"
+                        // label="Количество"
+                        id="amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        autoWidth
+                        type='text'
                     >
-                        <option value="1">1 паcсажир</option>
-                        <option value="2">2 паcсажира</option>
-                        <option value="3">3 пасcажира</option>
-                        <option value="4">4 пасcажира</option>
-                        <option value="5">5 пасcажиров</option>
-                    </select>
-                    <label htmlFor='amount' id='amountLabel' className='label-text'>Количество</label>
+                        <MenuItem value={1}>1 паcсажир</MenuItem>
+                        <MenuItem value={2}>2 паcсажира</MenuItem>
+                        <MenuItem value={3}>3 пасcажира</MenuItem>
+                        <MenuItem value={4}>4 пасcажира</MenuItem>
+                        <MenuItem value={5}>5 пасcажира</MenuItem>
+                    </Select>
                 </div>
                 <div className='buttunWrap'>
-                    <input
-                        type="button"
-                        className='searchButton'
-                        value="Найти"
-                        onClick={handleSubmit}
-                    />
+                    <Button variant="contained" type='submit' className='searchButton'>Найти</Button>
                 </div>
             </form>
         </div>
