@@ -1,6 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --main-bg-btn-color: #2A5FCF;
+  --main-bg-btn-hover-color:#134bc4;
+}
+
 *{
   margin: 0px;
 }
@@ -12,11 +18,13 @@ header{
   align-items: center;
 }
 .logo{
-  color: #6DB935;
+  color: var(--main-bg-btn-color);
+  /* color: #6DB935; */
   margin-left: 20px;
 }
 .loginBtn{
-  background-color: #6DB935;
+  background-color: var(--main-bg-btn-color);
+  /* background-color: #6DB935; */
   color: white;
   padding: 10px 20px;
   text-align: center;
@@ -24,9 +32,13 @@ header{
   border: none;
   cursor: pointer;
   width: 7%;
-  opacity: 0.9;
-  font-size: 15px;
+  /* opacity: 0.9; */
+  font-size: 12px;
   border-radius: 5px;
+}
+.loginBtn:hover{
+  background-color: var(--main-bg-btn-hover-color);
+  /* background-color: #5aa723; */
 }
 
 /* Блок с поиском поездок */
@@ -87,11 +99,15 @@ header{
   /* border: none; */
   width: 100%;
   height: 110%;
-  background-color: #6DB935;
+  background-color: var(--main-bg-btn-color);
+  /* background-color: #6DB935; */
   font-size: 15px;
   /* color: white; */
   font-weight: bold;
 }
 .searchButton:hover{
-  background-color: #5aa723;
+  background-color: var(--main-bg-btn-hover-color);
 }
+
+
+

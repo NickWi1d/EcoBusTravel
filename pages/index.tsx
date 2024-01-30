@@ -15,6 +15,9 @@ export default function Home() {
     const statusResult = await GET(username, type)
     if (statusResult?.message === 'SUCCESSFULLY') {
       console.log(statusResult.password)
+      dispatch(logIn({
+        user: username
+      }))
     }
   }
   useEffect(()=>{
@@ -25,9 +28,6 @@ export default function Home() {
     if(token && currentUser){
       //запрос к бд + добавление в диспатч true
       getDataAboutCurrentUser(currentUser, 'GET_DATA')
-      dispatch(logIn({
-        user: currentUser
-      }))
     }else{
       dispatch(logOut({}))
     }

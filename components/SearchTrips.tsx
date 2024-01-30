@@ -1,36 +1,52 @@
 "use client";
-import React, { MouseEvent, useState } from 'react'
+import React, { MouseEvent, useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { TextField, Select, MenuItem, InputLabel, Button } from '@mui/material';
+import { getCurrentDate } from '@/components/Filter'
+
+interface ParamsType {
+    from: string,
+    to: string,
+    date: string,
+    amount: string,
+    bottomPrice:string,
+    topPrice:string
+}
 
 const SearchTrips: React.FC = () => {
     const router = useRouter()
-    const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        // router.push(`/SearchResults?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(date)}&amount=${encodeURIComponent(amount)}`)
-        const params = {
-            from: from,
-            to: to,
-            date: date,
-            amount: amount,
-        }
-        const queryString = new URLSearchParams(Object.fromEntries(
-            Object.entries(params).filter(([_, value]) => value.trim() !== '')
-          ))
-        router.push(`/SearchResults?${queryString}`)
-
-    };
+    
     const [from, setFrom] = useState('Минск')
     const [to, setTo] = useState('')
-    const [date, setDate] = useState('2023-12-13')
+    const [date, setDate] = useState(getCurrentDate())
     const [amount, setAmount] = useState('1')
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>, params: ParamsType) => {
+        e.preventDefault()
+        const queryString = new URLSearchParams(Object.fromEntries(
+            Object.entries(params).filter(([_, value]) => value.trim() !== '')
+        ))
+        console.log(queryString)
+        router.push(`/SearchResults?${queryString}`)
+
+    }
+
     return (
         <div className='SearchSection'>
             <div className='SearchTitle'>
                 <h2>Купить билет на автобус</h2>
                 <h4>по Беларуси</h4>
             </div>
-            <form onSubmit={handleSubmit} className='SearchForm'>
+            <form
+                onSubmit={(e) => handleSubmit(e, {
+                    from: from,
+                    to: to,
+                    date: date,
+                    amount: amount,
+                    bottomPrice:'0',
+                    topPrice:'100'
+                })}
+                className='SearchForm'>
                 <div className='inputSection'>
                     <TextField
                         className='SearchParamsInput'

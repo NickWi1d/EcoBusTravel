@@ -1,0 +1,120 @@
+.loader {
+    margin-top: 30%;
+}
+.message{
+    margin-top: 30%;
+    font-size: large;
+}
+/* Фильтр */
+
+.findBnt {
+    background-color: var(--main-bg-btn-color);
+    /* background-color: #6DB935; */
+    &:hover {
+        background-color: var(--main-bg-btn-hover-color);
+    }
+}
+.filterWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20%;
+    /* Установите ширину фильтра по вашему усмотрению */
+    height: 100vh;
+    /* Высота фильтра равна высоте видимой области */
+    // overflow-y: auto; /* Добавьте прокрутку, если фильтр выше видимой области */
+    background-color: #fff;
+    /* Задайте цвет фона фильтра */
+    border-right: 1px solid #ccc;
+    /* Опционально: добавьте правую границу для разделения фильтра от результатов */
+}
+
+// TripCard
+
+.resultsBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+    margin-left: 25%;
+}
+.tripCard {
+    margin-top: 2%;
+    // margin-bottom: 2%;
+    width: 100%;
+    // height: 200px;
+}
+
+.showedInfo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 2fr 1fr;
+    gap: 10px;
+    border: 1px solid var(--main-bg-btn-color);
+}
+
+.gridItemLeft {
+    // padding: 20px;
+    padding-top: 5%;
+    padding-left: 4%;
+    // text-align: center;
+
+}
+.gridItemRight {
+    // padding: 20px;
+    padding-top: 5%;
+    padding-right: 4%;
+    text-align: right;
+}
+.doubleCell {
+    grid-column: span 2;
+    padding-left: 2%;
+    // justify-self: start;
+    display: flex;
+    align-items: center;
+}
+
+.doubleCellRight {
+    grid-column: span 2;
+    padding-right: 2%;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+}
+
+.fromBlock,
+.toBlock,
+.priceBlock {
+    display: flex;
+    flex-direction: column;
+}
+
+.orderBtn {
+    background-color: var(--main-bg-btn-color);
+    width: 100%;
+    height: 65%;
+    &:hover {
+        background-color: var(--main-bg-btn-hover-color);
+    }
+}
+
+.hiddenInfo{
+    height: 100px;
+    // background-color: red;
+}
+.hidden{
+    display: none;
+}
+.showed{
+    display: block;
+}
+
+
+
+
+
+
+
+
+
+

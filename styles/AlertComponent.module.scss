@@ -1,0 +1,33 @@
+.alert {
+    position: absolute;
+    width: 30%;
+    z-index: 1000;
+}
+
+.slideIn {
+    animation: slideInAnimation 0.5s ease-out forwards;
+}
+
+.slideOut {
+    animation: slideOutAnimation 0.5s ease-in forwards;
+}
+
+@keyframes slideInAnimation {
+    from {
+        transform: translateY(-200%);
+    }
+
+    to {
+        transform: translateY(-120%);
+    }
+}
+
+@keyframes slideOutAnimation {
+    from {
+        transform: translateY(-120%);
+    }   
+
+    to {
+        transform: translateY(-200%);
+    }
+}
