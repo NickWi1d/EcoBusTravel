@@ -1,0 +1,130 @@
+.Btn{
+    background-color: var(--main-bg-btn-color);
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+
+.busL {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    grid-template-rows: repeat(5, 50px);
+    /* 4 ряда, каждый высотой 40px */
+    /* 9 столбца */
+    grid-gap: 5px;
+    /* Расстояние между местами */
+    width: 100%;
+    /* Ширина автобуса */
+    padding: 20px;
+    border: 5px solid #c3cfdf;
+    border-radius: 10px;
+}
+.SeatL,
+.SeatM{
+    height: 40px;
+    width: 40px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.SeatL:hover,
+.SeatM:hover {
+    border: 1.5px solid var(--main-bg-btn-hover-color);
+}
+
+.SeatL:nth-child(14),
+.SeatM:nth-child(9) {
+    grid-row: span 4;
+    height: 85px;
+}
+
+.SeatL:nth-child(16),
+.SeatL:nth-child(17),
+.SeatL:nth-child(18),
+.SeatL:nth-child(19),
+.SeatL:nth-child(20),
+.SeatL:nth-child(22),
+.SeatL:nth-child(23),
+.SeatL:nth-child(24),
+.SeatL:nth-child(25),
+.SeatL:nth-child(26),
+
+.SeatM:nth-child(11),
+.SeatM:nth-child(12),
+.SeatM:nth-child(13),
+.SeatM:nth-child(14),
+.SeatM:nth-child(15),
+.SeatM:nth-child(16),
+.SeatM:nth-child(17),
+
+.freeSeatS:nth-child(2),
+.freeSeatS:nth-child(3),
+.freeSeatS:nth-child(4),
+.freeSeatS:nth-child(5),
+.freeSeatS:nth-child(6),
+.freeSeatS:nth-child(7) {
+    grid-row: span 2;
+}
+
+
+.SeatL:nth-child(21),
+.freeSeatS:nth-child(8) {
+    grid-row: span 4;
+}
+
+.SeatL:nth-child(27) {
+    grid-row: span 3;
+}
+.normal {
+    background-color: #ffffff;
+    border: 1px solid var(--main-bg-btn-color);
+    // cursor: pointer;
+    color: var(--main-bg-btn-color);
+    font-weight: 500;
+    user-select: none;
+}
+.selected {
+    background-color: var(--main-bg-btn-color);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+.driver {
+    border: none;
+    pointer-events: none;
+    background-image: url('/Без названия.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.busM {
+    @extend .busL;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(4, 40px);
+    width: 650px;
+    grid-gap: 20px;
+}
+
+.passengerInfo {
+    margin-top: 2%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-radius: 7px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: 4%;
+    background-color: #ffffff;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2), -2px -2px 10px rgba(0, 0, 0, 0.2);
+    border-left: 7px solid var(--main-bg-btn-color);
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+}

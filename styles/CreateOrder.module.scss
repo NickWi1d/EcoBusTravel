@@ -1,0 +1,503 @@
+.OrderProcessContent {
+    width: 90%;
+    margin-left: 5%;
+    margin-bottom: 20%;
+}
+
+//first Step
+.choosingPlacesBox {
+    display: flex;
+    margin-top: 2%;
+}
+
+.choosingPlaces {
+    width: 70%;
+}
+
+.additionalInformation {
+    width: 20%;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    padding-top: 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    // padding-left:2%; 
+}
+
+.status_choose_title {
+    display: flex;
+    align-items: center;
+
+    span {
+        margin-left: 5px;
+    }
+}
+
+.departureInfo {
+    display: flex;
+}
+
+.travelTime {
+    display: flex;
+}
+
+.destinationInfo {
+    display: flex;
+}
+
+.returnTripInfo {
+    display: flex;
+    flex-direction: row;
+}
+
+.infoBlock {
+    width: 90%;
+}
+
+// места в автобусе
+
+
+.busL {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    grid-template-rows: repeat(5, 50px);
+    /* 4 ряда, каждый высотой 40px */
+    /* 9 столбца */
+    grid-gap: 5px;
+    /* Расстояние между местами */
+    width: 100%;
+    /* Ширина автобуса */
+    padding: 20px;
+    border: 5px solid #c3cfdf;
+    border-radius: 10px;
+}
+
+.SeatL,
+.SeatM,
+.freeSeatS {
+    height: 40px;
+    width: 40px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.SeatL:hover,
+.SeatM:hover,
+.freeSeatS:hover {
+    border: 1.5px solid var(--main-bg-btn-hover-color);
+}
+
+.SeatL:nth-child(14),
+.SeatM:nth-child(9) {
+    grid-row: span 4;
+    height: 85px;
+}
+
+.SeatL:nth-child(16),
+.SeatL:nth-child(17),
+.SeatL:nth-child(18),
+.SeatL:nth-child(19),
+.SeatL:nth-child(20),
+.SeatL:nth-child(22),
+.SeatL:nth-child(23),
+.SeatL:nth-child(24),
+.SeatL:nth-child(25),
+.SeatL:nth-child(26),
+
+.SeatM:nth-child(11),
+.SeatM:nth-child(12),
+.SeatM:nth-child(13),
+.SeatM:nth-child(14),
+.SeatM:nth-child(15),
+.SeatM:nth-child(16),
+.SeatM:nth-child(17),
+
+.freeSeatS:nth-child(2),
+.freeSeatS:nth-child(3),
+.freeSeatS:nth-child(4),
+.freeSeatS:nth-child(5),
+.freeSeatS:nth-child(6),
+.freeSeatS:nth-child(7) {
+    grid-row: span 2;
+}
+
+
+.SeatL:nth-child(21),
+.freeSeatS:nth-child(8) {
+    grid-row: span 4;
+}
+
+.SeatL:nth-child(27) {
+    grid-row: span 3;
+}
+
+
+
+
+//Large bus
+.normal {
+    background-color: #ffffff;
+    border: 1px solid var(--main-bg-btn-color);
+    cursor: pointer;
+    color: var(--main-bg-btn-color);
+    font-weight: 500;
+    user-select: none;
+}
+
+.occupied {
+    background-color: #edf2fa;
+    border: none;
+    pointer-events: none;
+    color: #808899;
+    user-select: none;
+}
+
+.occupied:hover {
+    border: none;
+}
+
+.selected {
+    background-color: var(--main-bg-btn-color);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.driver {
+    border: none;
+    pointer-events: none;
+    background-image: url('/Без названия.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+/// Medium Bus
+.busM {
+    @extend .busL;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(4, 40px);
+    width: 650px;
+    grid-gap: 20px;
+}
+
+
+// счетчик
+.counterBox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2%;
+    justify-content: space-between;
+}
+
+.counter {
+    margin-left: 10px;
+    display: flex;
+    width: 100px;
+}
+
+.decrement {
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--main-bg-btn-color);
+    font-weight: 1000;
+    border: 1px solid var(--main-bg-btn-color);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.decrement:hover {
+    color: red;
+    border: 1px solid red;
+}
+
+.increment {
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--main-bg-btn-color);
+    font-weight: 1000;
+    border: 1px solid var(--main-bg-btn-color);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.increment:hover {
+    color: red;
+    border: 1px solid red;
+}
+
+.account {
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    border-top: 1px solid var(--main-bg-btn-color);
+    border-bottom: 1px solid var(--main-bg-btn-color);
+}
+
+.transcript {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+    margin-top: 2%;
+}
+
+// tripInfo
+.titleBox {
+    padding-left: 10%;
+
+    p:nth-child(1) {
+        color: #868684;
+    }
+}
+
+.departureInfoBox {
+    margin-top: 5%;
+    padding-left: 10%;
+
+    p:nth-child(1) {
+        color: #868684;
+    }
+}
+
+.destinationInfoBox {
+    margin-top: 5%;
+    padding-left: 10%;
+
+    p:nth-child(1) {
+        color: #868684;
+    }
+}
+
+.preliminaryCost {
+    margin-top: 3%;
+    padding-top: 7%;
+    padding-left: 10%;
+    width: 100%;
+    border-top: 1px solid #d8d8d8;
+
+    p:nth-child(1) {
+        color: #868684;
+    }
+}
+
+
+/// Second Step 
+.secondStep {
+    display: flex;
+    margin-top: 2%;
+}
+
+.passengersData {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+
+.passengerDataCard {
+    width: 750px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2), -2px -2px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2%;
+}
+
+.topBlock {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2%;
+}
+
+.fio {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 2%;
+    margin-right: 20px;
+}
+
+.otherPersonalInfo {
+    margin-top: 4%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1%;
+    padding-right: 15px;
+    padding-left: 2%
+}
+
+.gender {
+    @extend .counter;
+    margin-left: 0px
+}
+
+.maleBnt {
+    @extend .decrement;
+    height: 55px;
+    font-weight: 700;
+}
+
+.pickedFemaleBnt,
+.pickedFemaleBnt:hover {
+    background-color: red;
+    color: white;
+    border: none;
+}
+
+.pickedMaleBnt,
+.pickedMaleBnt:hover {
+    background-color: var(--main-bg-btn-color);
+    color: white;
+    border: none;
+}
+
+.femaleBtn {
+    @extend .increment;
+    height: 55px;
+    font-weight: 700;
+}
+
+.document {
+    width: 240px;
+}
+
+.birthDate {
+    width: 31%;
+}
+
+.documentNumber {
+    width: 31%;
+}
+
+.choosePassangerLink {
+    color: var(--main-bg-btn-color);
+
+    cursor: pointer;
+}
+
+.choosePassangerLink:hover {
+    text-decoration: underline;
+}
+
+.passengerInfo {
+    margin-top: 5%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-radius: 7px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: 4%;
+    background-color: #ffffff;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2), -2px -2px 10px rgba(0, 0, 0, 0.2);
+    border-left: 7px solid var(--main-bg-btn-color);
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.passengerInfo:hover {
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/// customerCard
+.customerCard {
+    width: 470px;
+    display: flex;
+    flex-direction: column;
+}
+
+.customerFIO {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6%;
+}
+
+.customerPersonalInfo {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.Btn{
+    background-color: var(--main-bg-btn-color);
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+
+////
+.completionStep {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .subtitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .infoSection {
+    margin-bottom: 20px;
+  }
+  
+  .infoSection ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .infoSection ul li {
+    margin-bottom: 5px;
+  }
+  
+  .confirmButton {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .confirmButton:hover {
+    background-color: #0056b3;
+  }
+  

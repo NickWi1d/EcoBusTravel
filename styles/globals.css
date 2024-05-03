@@ -1,28 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "~leaflet/dist/leaflet.css";
 
 :root {
   --main-bg-btn-color: #2A5FCF;
-  --main-bg-btn-hover-color:#134bc4;
+  --main-bg-btn-hover-color: #134bc4;
 }
 
-*{
+* {
   margin: 0px;
 }
-header{
+
+.Btn {
+  background-color: var(--main-bg-btn-color);
+  color: white;
+  height: 100%;
+  width: 27%;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  font-size: 25px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+html {
+  height: 100vh;
+}
+
+body {
+  /* background-color: #3d516b; */
+  /* background-color: #F0F3F5; */
+  height: 100vh;
+}
+
+main {
+  height: 100vh;
+}
+
+header {
   height: 80px;
   /* background-color: #6DB935; */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #ffffff;
 }
-.logo{
+
+.logo {
   color: var(--main-bg-btn-color);
   /* color: #6DB935; */
   margin-left: 20px;
 }
-.loginBtn{
+
+.loginBtn {
   background-color: var(--main-bg-btn-color);
   /* background-color: #6DB935; */
   color: white;
@@ -31,38 +63,45 @@ header{
   margin: 8px 20px;
   border: none;
   cursor: pointer;
-  width: 7%;
+  /* width: 7%; */
   /* opacity: 0.9; */
   font-size: 12px;
   border-radius: 5px;
 }
-.loginBtn:hover{
+
+.loginBtn:hover {
   background-color: var(--main-bg-btn-hover-color);
   /* background-color: #5aa723; */
 }
 
 /* Блок с поиском поездок */
-.SearchSection{
-  height: 344px;
+.SearchSection {
+  height: 70%;
+  /* height: 344px; */
   /* background-image: url(../public/bronirovanie-biletov-na-avtobus-onlajn-otvety-na-7-voprosov.png); */
-  background-position:center;
+  background-image: url(../public/1701914278_sportishka-com-p-belorusskaya-priroda-pinterest-42.jpg);
+  background-position: center;
+  background-size: cover;
   display: flex;
   background-repeat: no-repeat;
   flex-direction: column;
-  justify-content: space-evenly;  
+  justify-content: space-evenly;
   align-items: flex-start;
 
 }
-.SearchTitle{
+
+.SearchTitle {
   height: 50%;
 }
-.SearchTitle > h2{
+
+.SearchTitle>h2 {
   margin: 0;
-  font-size: 40px;          
+  font-size: 40px;
   color: white;
   margin-left: 35px;
 }
-.SearchTitle  > h4{
+
+.SearchTitle>h4 {
   margin: 0;
   margin-top: 15px;
   font-size: 26px;
@@ -70,44 +109,67 @@ header{
   text-align: left;
   margin-left: 35px;
 }
-.SearchForm{
+
+.SearchForm {
+  margin-left: 10%;
   display: flex;
-  width: 100%;
-  height: 50px;
+  align-items: end;
+  width: 80%;
+  /* margin-left: 2.5%; */
+  height: 20%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 5%;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.504) inset;
+
 }
-.inputSection{
+
+.inputSection {
   width: 20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.inputSection:first-child {
+  margin-left: 35px;
+}
+
+.SearchParamsInput {
+  width: 96.6%;
+  background-color: #ffffff;
+  border-radius: 5px;
+}
+
+.SearchParamsInput::after {
+  display: none
+}
+
+.inputSection>select {
   height: 100%;
 }
 
-.inputSection:first-child{
-  margin-left: 35px;
-}
-.SearchParamsInput{
-  width: 96.6%;
-}
-.inputSection > select{
-  height: 100%;
-}
-.buttunWrap{
+.buttunWrap {
   width: 15%;
   height: 100%;
+  display: flex;
+  align-items: center;
 }
-.searchButton{
+
+.searchButton {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   /* border: none; */
   width: 100%;
-  height: 110%;
+  height: 55%;
   background-color: var(--main-bg-btn-color);
   /* background-color: #6DB935; */
   font-size: 15px;
   /* color: white; */
   font-weight: bold;
 }
-.searchButton:hover{
+
+.searchButton:hover {
   background-color: var(--main-bg-btn-hover-color);
 }
-
-
-

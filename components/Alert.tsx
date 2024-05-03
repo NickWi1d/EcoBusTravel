@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { Alert, AlertTitle } from "@mui/material";
 import styles from '@/styles/AlertComponent.module.scss'
+import { CustomAlertType } from '@/types/types';
 
 
 
-type CustomAlertType = "error" | "warning" | "info" | "success";
+
 interface AlertProps {
     showAlert:boolean,
     setShowAlert: React.Dispatch<React.SetStateAction<boolean>>,
@@ -16,7 +17,7 @@ interface AlertProps {
 
 
 
-const AlertComponent: React.FC<AlertProps> = ({ showAlert, setShowAlert, type, text, error }) => {
+const AlertComponent: FC<AlertProps> = ({ showAlert, setShowAlert, type, text, error }) => {
     const Title = type.charAt(0).toUpperCase() + type.slice(1)
 
 

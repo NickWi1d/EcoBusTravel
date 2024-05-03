@@ -1,21 +1,25 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase, closeDatabaseConnection } from '../../lib/mongodb'
-import { ObjectId } from 'mongodb';
+import { BusTrip, Customer, IUser, Passenger, SeatsArray } from "@/types/types";
+import { v4 as uuidv4 } from 'uuid';
 
-function TransformQueryParams(queryParams:Record<string, string >){
+
+type typeOfUpDate = 'SEAT_RESERVATION' | 'FULL_UPDATE_TRIP_INFO' | 'UPDATE_SEAT_TRIP_INFO' | 'DELETE_ORDER'
+
+function TransformQueryParams(queryParams: Record<string, string>) {
   const params: Record<string, string | object> = {}
-  let price = {$gte:0,$lte:100}
+  let price = { $gte: 0, $lte: 100 }
   for (const [key, value] of Object.entries(queryParams)) {
-      if(key === 'from' || key === 'to' || key === 'date' || key === 'time' ){
-        params[key] = value
+    if (key === 'from' || key === 'to' || key === 'date' || key === 'time') {
+      params[key] = value
     }
-    else if(key === 'amount'){
-      params['availableSeats'] = { $gte : parseInt(value, 10)}
+    else if (key === 'amount') {
+      params['availableSeats'] = { $gte: parseInt(value, 10) }
     }
-    else if(key === 'bottomPrice' ){
+    else if (key === 'bottomPrice') {
       price['$gte'] = Number(value)
-    }else if(key === 'topPrice'){
+    } else if (key === 'topPrice') {
       price['$lte'] = Number(value)
     }
   }
@@ -23,58 +27,256 @@ function TransformQueryParams(queryParams:Record<string, string >){
   return params
 }
 
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => {
   const db = await connectToDatabase();
-  if (req.method === 'POST') {
-    // try {
-    //   const busTrips = await db.collection('BusTrips').find(req.body).toArray();
-    //   res.status(200).json({ busTrips });
-    // } catch (error) {
-    //   console.error(error);
-    //   res.status(500).json({ error: 'Internal Server Error' });
-    // }
-  }else if(req.method === 'GET'){
+  try {
+    const { tripData } = req.body as { tripData: BusTrip }
+    const addNewTrip = await db.collection('BusTrips').insertOne({
+      date: tripData.date,
+      driver: tripData.driver,
+      finishTime: tripData.finishTime,
+      from: tripData.from,
+      price: tripData.price,
+      to: tripData.to,
+      type: tripData.type,
+      availableSeats: tripData.availableSeats,
+      travelTime: tripData.travelTime,
+      reservedSeats: tripData.reservedSeats,
+      seats: tripData.seats,
+      startTime: tripData.startTime,
+      destination: tripData.destination,
+      departure: tripData.departure
+    })
+    if (addNewTrip.acknowledged === true) {
+      res.status(200).json({ message: `Trip was successfully added`, addNewTrip })
+    } else {
+      res.status(404).json({ message: 'Something went wrongd' })
+    }
+  } catch (error) {
+    console.error('Error during registration:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+
+const handleLogin = async (req: NextApiRequest, res: NextApiResponse) => {
+  const db = await connectToDatabase();
+  try {
     const queryParams = req.query as Record<string, string>
     const params = TransformQueryParams(queryParams)
-    console.log(params)
-    if(queryParams){
+    console.log('Params', params)
+
+    if (queryParams) {
+
       const busTrips = await db.collection('BusTrips').find(params).toArray();
-      if(busTrips){
+      if (busTrips) {
         res.status(200).json({ message: 'The results are found', busTrips });
-      }else{
+      } else {
         res.status(401).json({ message: 'There are no results' });
       }
-    }
-    
-  }
-  else if (req.method === 'PUT') {
-     // Обновление данных рейса
-     const { _id, availableSeats} = req.body as { _id: string, availableSeats: number};
-     if (_id) {
-      try {
-        const updateUser = await db.collection('BusTrips').updateOne({ _id: new ObjectId(_id) }, { $set: { availableSeats:availableSeats } });
-        if (updateUser.modifiedCount === 1) {
-          res.status(200).json({ message: 'TripInfo successfully updated' });
-        } else if (updateUser.matchedCount === 0) {
-          res.status(404).json({ message: 'Trip not found' });
-        } else {
-          res.status(200).json({ message: 'No changes made to the user' });
-        }
-      } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    } else {
-      res.status(400).json({ message: 'Invalid or missing user tripID' });
-    }
-    // try {
-    //   const collection = db.collection('BusTrips'); // Choose a name for your collection
-    //   await collection.insertOne(req.body);
-    //   res.status(201).json({ message: 'Data saved successfully!' });
-    // } catch (error) {
-    //   res.status(500).json({ message: 'Something went wrong!' });
-    // } 
-  }
 
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 }
+
+const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
+  const db = await connectToDatabase();
+  try {
+    const { id, type } = req.body as { id: string, type: typeOfUpDate }
+    if (id) {
+      if (type === 'SEAT_RESERVATION') {
+        const { availableSeats, amountOfTickets, reservedSeats, seats, selectedSeats, currentPassengers, customer, user, orderId } = req.body as { id: string, availableSeats: number, reservedSeats: number, seats: SeatsArray, amountOfTickets: number, selectedSeats: string[], currentPassengers: Passenger[], customer:Customer, user:{uid:string, username:string}, orderId:string }
+        console.log('reservedSeats', typeof (reservedSeats))
+        console.log('amountOfTickets', typeof (amountOfTickets))
+        console.log('currentPassengers', currentPassengers)
+
+        const updateTripInfo = await db.collection('BusTrips').updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              availableSeats: availableSeats - amountOfTickets,
+              reservedSeats: reservedSeats + amountOfTickets,
+              seats: [...seats.map((seat, index) => {
+                console.log(seat)
+                if (selectedSeats.includes((index + 1).toString())) {
+                  return {
+                    ...seat,
+                    orderId:orderId,
+                    user: {
+                      _id: user.uid,
+                      username: user.username,
+                      email: customer.email,
+                      surname: customer.surname,
+                      name: customer.name
+                    },
+                    available: false,
+                    owner: currentPassengers[selectedSeats.indexOf((index + 1).toString())]
+                  }
+                } else {
+                  return {
+                    ...seat
+                  }
+                }
+              })]
+            }
+          }
+        );
+        if (updateTripInfo.modifiedCount === 1) {
+          res.status(200).json({ message: 'BusTrip was successfully updated' })
+        } else if (updateTripInfo.matchedCount === 0) {
+          res.status(404).json({ message: 'Something went wrong' })
+        }
+      } else if (type === 'FULL_UPDATE_TRIP_INFO') {
+        const { trip } = req.body as { trip: BusTrip }
+        console.log(trip);
+        const fullUpDateTripIno = await db.collection('BusTrips').updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              date: trip.date,
+              driver: trip.driver,
+              finishTime: trip.finishTime,
+              from: trip.from,
+              price: trip.price,
+              to: trip.to,
+              type: trip.type,
+              availableSeats: trip.availableSeats,
+              travelTime: trip.travelTime,
+              reservedSeats: trip.reservedSeats,
+              seats: trip.seats,
+              startTime: trip.startTime,
+              destination: trip.destination,
+              departure: trip.departure
+            }
+          }
+        )
+        if (fullUpDateTripIno.modifiedCount === 1) {
+          res.status(200).json({ message: 'BusTrip was successfully updated' })
+        } else if (fullUpDateTripIno.matchedCount === 0) {
+          res.status(404).json({ message: 'Something went wrong' })
+        }
+      } else if (type === 'UPDATE_SEAT_TRIP_INFO') {
+        const { user, seats, seatsTripData } = req.body as { user: IUser, seats: Array<string>, seatsTripData: SeatsArray }
+        const fullUpDateTripIno = await db.collection('BusTrips').updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              seats: [...seatsTripData.map(seat => {
+                if (seat.available === false && seat.owner !== null) {
+                  if (seats.includes(seat.owner.id)) {
+                    let userPassanger = user.passengers.filter(passenger => passenger.id === seat.owner?.id)[0]
+                    return {
+                      user: {
+                        _id: user._id,
+                        username: user.username,
+                        email: user.email,
+                        surname: user.surname,
+                        name: user.name,
+                      },
+                      available: false,
+                      owner: {
+                        id: userPassanger.id,
+                        birthDate: userPassanger.birthDate,
+                        documentNumber: userPassanger.documentNumber,
+                        gender: userPassanger.gender,
+                        name: userPassanger.name,
+                        patronymic: userPassanger.patronymic,
+                        surname: userPassanger.surname,
+                      }
+                    }
+                  }
+                  return seat
+                } else {
+                  return seat
+                }
+              })]
+            }
+          }
+        )
+        if (fullUpDateTripIno.modifiedCount === 1) {
+          res.status(200).json({ message: 'BusTrip was successfully updated' })
+        } else if (fullUpDateTripIno.matchedCount === 0) {
+          res.status(404).json({ message: 'Something went wrong' })
+        }
+      }else if (type === 'DELETE_ORDER') {
+        const { seats, orderId, availableSeats, reservedSeats, amountOfTickets} = req.body as { seats: SeatsArray, orderId:string, availableSeats:number, reservedSeats:number, amountOfTickets:number }
+        console.log('seats',seats);
+        
+        const deleteOrder = await db.collection('BusTrips').updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              availableSeats: availableSeats + amountOfTickets,
+              reservedSeats: reservedSeats - amountOfTickets,
+              seats: [...seats.map(seat => {
+                if(seat.orderId === orderId){
+                  return {
+                    ...seat,
+                    orderId:'',
+                    user:null,
+                    available:true,
+                    owner: null
+                  }
+                }else{
+                  return {...seat}
+                }
+              })]
+            }
+          }
+        )
+        if (deleteOrder.modifiedCount === 1) {
+          res.status(200).json({ message: 'BusTrip was successfully updated' })
+        } else if (deleteOrder.matchedCount === 0) {
+          res.status(404).json({ message: 'Something went wrong' })
+        }
+      }
+    }
+    else {
+      res.status(400).json({ message: 'Invalid or missing trup uid' });
+    }
+  } catch (error) {
+    console.error('Error during deletion:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
+  const db = await connectToDatabase();
+  try {
+    const { uid } = req.query as { uid: string }
+    if (uid && typeof uid === 'string') {
+
+      const uidObj = new ObjectId(uid)
+      const deleteTrip = await db.collection('BusTrips').deleteOne({ "_id": uidObj });
+      if (deleteTrip.deletedCount === 1) {
+        res.status(200).json({ message: 'User successfully deleted' });
+      } else {
+        res.status(404).json({ message: 'User not found or already deleted' });
+      }
+
+    } else {
+      console.error(`There isn't such a user`);
+    }
+  } catch (error) {
+    console.error('Error during deletion:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+const handleRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { method } = req;
+  switch (method) {
+    case 'POST':
+      return handleRegistration(req, res);
+    case 'GET':
+      return handleLogin(req, res);
+    case 'DELETE':
+      return handleDelete(req, res);
+    case 'PUT':
+      return handleUpdate(req, res);
+    default:
+      return res.status(405).json({ message: 'Method Not Allowed' });
+  }
+};
+export default handleRequest;

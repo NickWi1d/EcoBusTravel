@@ -1,243 +1,29 @@
 'use client';
-import React, { useEffect, useState } from 'react'
-import Filter from '@/components/Filter'
-import TripCard from '@/components/TripCard';
-import { RootState } from '@/redux/store'
-import { useDispatch, useSelector } from 'react-redux';
-import { GET } from '@/lib/actionsDB'
-import { useSearchParams, useParams } from 'next/navigation'
+import Filter from '@/components/SearchTrips/Filter';
+import TripCard from '@/components/SearchTrips/TripCard';
+
+
 import { useRouter } from 'next/router';
-import style from '@/styles/SearchResults.module.scss'
-import { CircularProgress } from '@mui/material'
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-interface QueryParams {
-  [key: string]: string | string[] | undefined
-}
-interface seatsObj {
-  1:{
-    available:boolean,
-    owner:string | null
-  },
-  2:{
-    available:boolean,
-    owner:string | null
-  }
-  3:{
-    available:boolean,
-    owner:string | null
-  },
-  4:{
-    available:boolean,
-    owner:string | null
-  },
-  5:{
-    available:boolean,
-    owner:string | null
-  },
-  6:{
-    available:boolean,
-    owner:string | null
-  }
-  7:{
-    available:boolean,
-    owner:string | null
-  },
-  8:{
-    available:boolean,
-    owner:string | null
-  },
-  9:{
-    available:boolean,
-    owner:string | null
-  },
-  10:{
-    available:boolean,
-    owner:string | null
-  }
-  11:{
-    available:boolean,
-    owner:string | null
-  },
-  12:{
-    available:boolean,
-    owner:string | null
-  },
-  13:{
-    available:boolean,
-    owner:string | null
-  },
-  14:{
-    available:boolean,
-    owner:string | null
-  }
-  15:{
-    available:boolean,
-    owner:string | null
-  },
-  16?:{
-    available:boolean,
-    owner:string | null
-  },
-  17?:{
-    available:boolean,
-    owner:string | null
-  },
-  18?:{
-    available:boolean,
-    owner:string | null
-  },
-  20?:{
-    available:boolean,
-    owner:string | null
-  },
-  21?:{
-    available:boolean,
-    owner:string | null
-  },
-  22?:{
-    available:boolean,
-    owner:string | null
-  },
-  23?:{
-    available:boolean,
-    owner:string | null
-  }
-  24?:{
-    available:boolean,
-    owner:string | null
-  },
-  25?:{
-    available:boolean,
-    owner:string | null
-  },
-  26?:{
-    available:boolean,
-    owner:string | null
-  },
-  27?:{
-    available:boolean,
-    owner:string | null
-  }
-  28?:{
-    available:boolean,
-    owner:string | null
-  },
-  29?:{
-    available:boolean,
-    owner:string | null
-  },
-  30?:{
-    available:boolean,
-    owner:string | null
-  },
-  31?:{
-    available:boolean,
-    owner:string | null
-  }
-  32?:{
-    available:boolean,
-    owner:string | null
-  },
-  33?:{
-    available:boolean,
-    owner:string | null
-  },  
-  34?:{
-    available:boolean,
-    owner:string | null
-  },
-  35?:{
-    available:boolean,
-    owner:string | null
-  },
-  36?:{
-    available:boolean,
-    owner:string | null
-  }
-  37?:{
-    available:boolean,
-    owner:string | null
-  },
-  38?:{
-    available:boolean,
-    owner:string | null
-  },
-  39?:{
-    available:boolean,
-    owner:string | null
-  },
-  40?:{
-    available:boolean,
-    owner:string | null
-  }
-  41?:{
-    available:boolean,
-    owner:string | null
-  },
-  42?:{
-    available:boolean,
-    owner:string | null
-  },  
-  43?:{
-    available:boolean,
-    owner:string | null
-  },
-  44?:{
-    available:boolean,
-    owner:string | null
-  },
-  45?:{
-    available:boolean,
-    owner:string | null
-  }
-  46?:{
-    available:boolean,
-    owner:string | null
-  },
-  47?:{
-    available:boolean,
-    owner:string | null
-  },
-  48?:{
-    available:boolean,
-    owner:string | null
-  },
-  49?:{
-    available:boolean,
-    owner:string | null
-  }
-  50?:{
-    available:boolean,
-    owner:string | null
-  }
-}
+import style from '@/styles/SearchResults.module.scss';
+import { CircularProgress, Paper } from '@mui/material';
 
-type CustomAlertType = "error" | "warning" | "info" | "success";
-
-interface receivedObj {
-  _id: string,
-  date: string,
-  finishTime: string,
-  from: string,
-  price: number,
-  to: string,
-  tripID: string,
-  type: string,
-  availableSeats: number,
-  travelTime: string,
-  reservedSeats: number,
-  seats: seatsObj
-  startTime: string
-}
+import { BusTrip, CustomAlertType, QueryParams, SeatData, Params } from '@/types/types';
+import { useSearchParams } from 'next/navigation';
+import { clearSeatsInfo } from '@/components/CreateOrder/ChoosePlaces';
+import { useLazyGetTripsDataQuery } from '@/store/reducers/api/app';
 
 const SearchResults = () => {
+  /////важно
+  const [getTripsData, { isLoading: isTripsDataLoading, isError: isTripsDataError, data: TripsData, isSuccess: TripsDataSuccess, error: TripsDataError }] = useLazyGetTripsDataQuery()
   // const information = useSelector((state: RootState) => state.searchResults);
   // const info = useSelector((state: RootState) => state.searchParams);
   const router = useRouter();
-
   const dispatch = useDispatch();
-  const [isHaveResults, setIsHaveResults] = useState(false)
-  const [queryResults, setQueryResults] = useState([])
+  const [isLoadingResults, setIsLoadingResults] = useState(false)
+  const [queryResults, setQueryResults] = useState<BusTrip[]>([])
   const [queryParamsState, setQueryParamsState] = useState({} as QueryParams)
 
   const [showAlert, setShowAlert] = useState(false)
@@ -246,52 +32,70 @@ const SearchResults = () => {
 
 
   const getSearchResults = async () => {
+
     const queryParams = router.query as Record<string, string>
     setQueryParamsState(queryParams)
     if (Object.keys(queryParams).length !== 0) {
-      const result = await GET(dispatch, queryParams)
-      setQueryResults(result)
-      setIsHaveResults(true)
-      console.log(result)
+      getTripsData(queryParams)
+
     }
+
   }
   useEffect(() => {
+    if (TripsData && TripsDataSuccess) {
+      setIsLoadingResults(false)
+      setQueryResults(TripsData.busTrips)
+      console.log(TripsData.busTrips)
+    }
+  }, [TripsData, TripsDataSuccess])
+
+  useEffect(() => {
+    if (isTripsDataError && TripsDataError) {
+      if ('status' in TripsDataError) {
+        const error = TripsDataError.data as any
+        console.log('Something went wrong: ', error)
+      }
+    }
+  }, [isTripsDataError, TripsDataError])
+
+  useEffect(() => {
+    clearSeatsInfo()
+  }, [])
+
+  useEffect(() => {
+    setIsLoadingResults(true)
     getSearchResults()
     console.log(queryResults)
   }, [router.query])
   return (
-    <div >
-      <div className={style.filterWrapper}>
-        <Filter
-          params={queryParamsState}
-          setQueryParamsState={setQueryParamsState}
-          getSearchResults={getSearchResults}
-        />
-      </div>
-      <div className={style.resultsBlock}>
-        {!isHaveResults && <CircularProgress className={style.loader} />}
-        {queryResults.length !== 0 && queryResults.map((result: receivedObj, index: number) => (
-          <TripCard key={index}
-            result={result}
-            // startTime={result.startTime}
-            // from={result.from}
-            // departure='из'// departure={result.departure}
-            // finishTime={result.finishTime}
-            // to={result.to}
-            // destination='в'// destination={result.destination}
-            // availableSeats={result.availableSeats}
-            // travelTime={result.travelTime}
-            // _id={result._id}
-            // price={result.price}
-            setAlertType={setAlertType}
-            setAlertText={setAlertText}
-            setShowAlert={setShowAlert}
+    <div>
+      {/* <Header></Header> */}
+      <div className={style.searchResultsContent}>
+        <div className={style.filterWrapper}>
+          <Filter
+            params={queryParamsState}
+            setQueryParamsState={setQueryParamsState}
+            getSearchResults={getSearchResults}
+            setQueryResults={setQueryResults}
           />
-        ))}
-        {(queryResults.length === 0 && isHaveResults) && <p className={style.message}>Результатов не найдено</p>}
+        </div>
+        <div className={style.resultsBlock}>
+          {(queryResults.length !== 0 && !isLoadingResults) && <h1 className='font-bold text-2xl mb-4'>По вашему запросу {queryResults.length === 1 ? 'найден' : 'найдено'} {queryResults.length} {
+            queryResults.length === 1 ? 'рейс' : (queryResults.length === 2 || queryResults.length === 3 || queryResults.length === 4) ? 'рейса' : 'рейсов'
+          }</h1>}
+          {isLoadingResults && <CircularProgress className={style.loader} />}
+          {queryResults.length !== 0 && queryResults.map((result: BusTrip, index: number) => (
+            
+              <TripCard key={index}
+                result={result}
+                setAlertType={setAlertType}
+                setAlertText={setAlertText}
+                setShowAlert={setShowAlert}
+              />
+          ))}
+          {(!isLoadingResults && queryResults.length === 0) && <p className={style.message}>Результатов не найдено</p>}
+        </div>
       </div>
-
-
     </div>
   )
 }

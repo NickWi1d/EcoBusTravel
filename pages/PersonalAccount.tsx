@@ -1,19 +1,30 @@
 import { useEffect, useState, MouseEvent } from "react"
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation';
-import { logOut, logIn } from '@/redux/authSlice'
+import { logOut, logIn, dropUser } from '@/store/reducers/authSlice'
 import { Tab, Tabs, Box, TextField, Button, Alert, AlertTitle } from "@mui/material";
 import styles from '@/styles/PersonalAccount.module.scss'
-import { GET, DELETE, PUT } from '@/lib/user';
 import AlertComponent from '@/components/Alert'
+import { useDeleteMutation, useUpDateUserInfoMutation, useLazyLoginQuery, useLazyGetTripsDataQuery } from "@/store/reducers/api/app";
+import Modal from "@/components/ModalWindows/Modal";
+import ChangePassword from "@/components/ModalWindows/ChangePassword";
+import ConfirmDeletion from '@/components/ModalWindows/ConfirmDeletion'
+import Header from "@/components/Navigation/Header";
+import Settings from "@/components/PersonalAccount/Settings";
+import Info from "@/components/PersonalAccount/Info";
+import { BusTrip, CustomAlertType, Passenger, UserTrip } from "@/types/types";
+import { Head } from "next/document";
+import { clearSeatsInfo } from "@/components/CreateOrder/ChoosePlaces";
+import Passengers from "@/components/PersonalAccount/Passengers";
+
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
 }
-type CustomAlertType = "error" | "warning" | "info" | "success";
+
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -44,93 +55,219 @@ function a11yProps(index: number) {
 }
 
 const PersonalAccount = () => {
+  const UpdateInfoType = 'UPDATE_INFO'
+  const UpdatePasswordType = 'UPDATE_PASSWORD'
   let [uid, setUid] = useState('')
   const [value, setValue] = useState(0)
   const [username, setUsername] = useState('')
   const [surname, setSurname] = useState('')
-  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [newPasswordRepeat, setNewPasswordRepeat] = useState('')
   const [email, setEmail] = useState('')
+
+  const [showModal, setShowModal] = useState(false)
+  const [showModalConfirmDelition, setShowModalConfirmDelition] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const [alertText, setAlertText] = useState('Successfully updated!')
   const [alertType, setAlertType] = useState<CustomAlertType>('success')
+
+  const [getUserData, { isLoading: isLogInLoading, isError: isLogInError, data: UserData, isSuccess: isLogInSuccess, error: logInError }] = useLazyLoginQuery()
+  const [deleteUser, { isLoading, data: deleteUserData, isSuccess: isDeletionSuccess }] = useDeleteMutation()
+  const [updateUserData, { isSuccess: isUpdateSuccess, data: UpdateUserData, isError: isUpDateError, error: UpDateError }] = useUpDateUserInfoMutation()
+  const [getTripsData, { isLoading: isTripsDataLoading, isError: isTripsDataError, data: TripsData, isSuccess: TripsDataSuccess, error: TripsDataError }] = useLazyGetTripsDataQuery()
+
+  const [userPassengers, setUserPassengers] = useState<Passenger[] | []>([])
+  const [isEditPassengerInfo, setIsEditPassengerInfo] = useState(false)
+  const [userTrips, setUserTrips] = useState<UserTrip[] | []>([])
+
+  const dispatch = useDispatch()
+  const router = useRouter()
+
+  useEffect(() => {
+    console.log('ок', userPassengers);
+  }, [userPassengers])
 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const dispatch = useDispatch()
-  const router = useRouter()
-
-
-
-  function logOuthandler() {
-    router.push('/')
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    uid = ''
-    dispatch(logOut({}))
-
-  }
-
   async function deleteAccountHandler() {
     if (uid) {
-      const statusResult = await DELETE(uid)
-      if (statusResult?.message === 'SUCCESSFULLY_DELETED') {
-        logOuthandler()
-      }
+      deleteUser(uid)
+      dispatch(dropUser({}))
+      setShowModal(false)
     } else {
       console.log(`There isn't uid`)
     }
-
   }
+
   async function updateUserInfoHandler(e: MouseEvent<HTMLFormElement>) {
     e.preventDefault()
-    const statusResult = await PUT(uid, username, surname, password, email)
-    if (statusResult?.message === 'SUCCESSFULLY_UPDATED') {
-      console.log('Успешно сохранено!')
+    updateUserData({ uid, type: UpdateInfoType, username, surname, email, name })
+  }
+
+  async function UpdateUserPasswordHandler() {
+    if (newPassword.trim() === newPasswordRepeat.trim()) {
+      updateUserData({ uid, type: UpdatePasswordType, newPassword, password: currentPassword })
+      setShowModal(false)
+      console.log(currentPassword)
+      setAlertText('Password was successfully updated')
+      setAlertType('success')
+      setShowAlert(true)
+      setTimeout(() => {
+        setShowAlert(false)
+      }, 3000);
+    } else {
+      console.log('Пароли не совпадают')
+      setAlertText('Пароли не совпадают')
+      setAlertType('error')
+    }
+  }
+
+
+  async function ChangePasswordHandler() {
+    setShowModal(true)
+  }
+
+  useEffect(() => {
+    if (isLogInSuccess && UserData) {
+      setUsername(UserData.user.username)
+      setEmail(UserData.user.email)
+      setSurname(UserData.user.surname)
+      setName(UserData.user.name)
+      setUserPassengers(UserData.user.passengers)
+      // setUserTrips(UserData.user.trips)
+    }
+  }, [isLogInSuccess, UserData])
+
+  useEffect(() => {
+    if (isLogInSuccess && UserData && TripsDataSuccess && TripsData) {
+      setUserTrips([...UserData.user.trips.map(trip => {
+        return {
+          orderId:trip.orderId,
+          tripId: trip.tripId,
+          seats: trip.seats,
+          tripData: TripsData.busTrips.filter(busTrip => {
+            if (busTrip._id === trip.tripId) {
+              return {
+                date: busTrip.date,
+                driver: busTrip.driver,
+                finishTime: busTrip.finishTime,
+                from: busTrip.from,
+                price: busTrip.price,
+                to: busTrip.to,
+                type: busTrip.type,
+                availableSeats: busTrip.availableSeats,
+                travelTime: busTrip.travelTime,
+                reservedSeats: busTrip.reservedSeats,
+                startTime: busTrip.startTime,
+                destination: busTrip.destination,
+                departure: busTrip.departure
+              }
+            }
+          })[0]
+        }
+      })
+      ])
+    }
+  }, [TripsDataSuccess, TripsData, isLogInSuccess, UserData])
+
+
+  useEffect(() => {
+    if (isDeletionSuccess && deleteUserData) {
+      localStorage.setItem('token', 'null')
+      localStorage.setItem('user', 'null')
+      localStorage.setItem('uid', 'null')
+      uid = ''
+      dispatch(logOut({}))
+      router.push('/')
+    }
+  }, [isDeletionSuccess, deleteUserData])
+
+  useEffect(() => {
+    if (isUpdateSuccess && UpdateUserData) {
       setAlertType('success')
       setAlertText('Successfully updated!')
       setShowAlert(true)
       setTimeout(() => {
         setShowAlert(false)
       }, 3000);
-    } else if (statusResult?.message === 'NO_CHANGES') {
-      setAlertType('info')
-      setAlertText('There are no changes to update')
-      setShowAlert(true)
-      setTimeout(() => {
-        setShowAlert(false)
-      }, 3000);
+      console.log('Успешно сохранено!')
     }
-  }
-
-  async function getDataAboutCurrentUser(username: string, type: string) {
-    const statusResult = await GET(username, type)
-    if (statusResult?.message === 'SUCCESSFULLY') {
-      setUsername(statusResult.username)
-      setPassword(statusResult.password)
-      setEmail(statusResult.email)
-      setSurname(statusResult.surname)
-    }
-  }
+  }, [UpdateUserData, isUpdateSuccess])
 
   useEffect(() => {
+    if (isUpDateError && UpDateError) {
+
+      if ('status' in UpDateError) {
+        const data = UpDateError.data as any
+        // setError(data.message || 'Unknown error')
+        setAlertType('error')
+        setShowAlert(true)
+        setTimeout(() => {
+          setShowAlert(false)
+        }, 3000);
+      }
+
+    }
+  }, [isUpDateError, UpDateError])
+  // useEffect(() => {
+  //   if (TripsDataSuccess && TripsData) {
+  //     setUserTrips(TripsData.busTrips)
+  //   }
+  // }, [TripsDataSuccess, TripsData])
+
+  useEffect(() => {
+    clearSeatsInfo()
     const token = localStorage.getItem('token')
     console.log(token)
     const currentUser = localStorage.getItem('user')
-    setUid(token || '')
+    const userId = localStorage.getItem('uid')
+    setUid(userId || '')
     if (token && currentUser) {
-      getDataAboutCurrentUser(currentUser, 'GET_DATA')
+      getUserData({ username: currentUser, type: 'GET_DATA' })
+      getTripsData({})
+      // getTripsData({})
     }
+
     setAlertType('success')
     setAlertText('Login is successful')
-  }, [])
+  }, [isEditPassengerInfo])
+
+
   return (
     <>
+      {showModal &&
+        <Modal width={30}>
+          <ChangePassword
+            currentPassword={currentPassword}
+            newPassword={newPassword}
+            newPasswordRepeat={newPasswordRepeat}
+            setCurrentPassword={setCurrentPassword}
+            setNewPassword={setNewPassword}
+            setNewPasswordRepeat={setNewPasswordRepeat}
+            setShowModal={setShowModal}
+            UpdateUserPasswordHandler={UpdateUserPasswordHandler}
+            alertText={alertText}
+            alertType={alertType}
+          />
+
+        </Modal>}
+      {showModalConfirmDelition &&
+        <Modal width={30}>
+          <ConfirmDeletion
+            deleteAccount={deleteAccountHandler}
+            setShowModalConfirmDelition={setShowModalConfirmDelition}
+          />
+        </Modal>
+      }
       <Box className={styles.tabBox}
-        sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }}
+        sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', padding: 0 }}
       >
+
         <div className={styles.tabsBox}>
           <Tabs
             orientation="vertical"
@@ -142,81 +279,54 @@ const PersonalAccount = () => {
           >
             <Tab label="Личная информация" {...a11yProps(0)} />
             <Tab label="Мои поездки" {...a11yProps(1)} />
-            <Tab label="Удалить аккаунт" {...a11yProps(2)} />
+            <Tab label="Мои пасажиры" {...a11yProps(2)} />
+            <Tab label="Настройки" {...a11yProps(3)} />
             {/* <Tab label="Выйти" onClick={logOuthandler} /> */}
           </Tabs>
-          <Button variant="contained" onClick={logOuthandler} className={styles.logOutBtn}>Выйти</Button>
-          
+          {/* <Button variant="contained" onClick={logOuthandler} className={styles.logOutBtn}>Выйти</Button> */}
+
         </div>
 
         <TabPanel value={value} index={0}>
+          <Info
+            setUsername={setUsername}
+            setName={setName}
+            setSurname={setSurname}
+            setEmail={setEmail}
 
-          <form className={styles.infoForm} onSubmit={updateUserInfoHandler}>
-            {showAlert && (
-              <AlertComponent
-                showAlert={showAlert}
-                setShowAlert={setShowAlert}
-                type={alertType}
-                text={alertText}
-              />
-            )}
-            <TextField
-              className={styles.emailInput}
-              margin='normal'
-              required
-              id="username"
-              type='text'
-              label="Имя"
-              variant="outlined"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <TextField
-              className={styles.emailInput}
-              margin='normal'
-              id="surname"
-              type='text'
-              label="Фамилия"
-              variant="outlined"
-              value={surname}
-              onChange={(e) => setSurname(e.target.value)}
-            />
-            <TextField
-              className={styles.emailInput}
-              margin='normal'
-              required
-              id="email"
-              type='email'
-              label="e-mail"
-              variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              className={styles.emailInput}
-              margin='normal'
-              required
-              id="password"
-              type='text'
-              label="пароль"
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button variant="contained" type='submit' className={styles.SaveBtn}>Сохранить</Button>
-          </form>
+            email={email}
+            surname={surname}
+            name={name}
+            username={username}
+
+            showAlert={showAlert}
+            setShowAlert={setShowAlert}
+            alertType={alertType}
+            alertText={alertText}
+
+            updateUserInfoHandler={updateUserInfoHandler}
+          />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          У вас нет сохраненных поездок
+          {userTrips.length === 0 && 'У вас нет сохраненных поездок'}
+          {userTrips.map(trip => <div className="border border-gray-300 rounded-md p-4 mb-4">
+            <p className="text-lg font-semibold">Id: {trip.tripId}</p>
+            <p className="text-gray-700">Откуда: {trip.tripData.from}</p>
+            <p className="text-gray-700">Куда: {trip.tripData.to}</p>
+          </div>)}
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <div className={styles.deleteBntBox}>
-            <p>Удаление аккаунта без возможности восстановления. Все данные будут безвозвратно удалены.</p>
-            <button className={styles.deleteBnt} onClick={deleteAccountHandler}><strong><p className={styles.delLink}>Удалить аккаунт</p></strong></button>
-          </div>
+          <Passengers userPassengers={userPassengers} uid={uid} isEditPassengerInfo={isEditPassengerInfo} setIsEditPassengerInfo={setIsEditPassengerInfo} setUserPassengers={setUserPassengers}></Passengers>
         </TabPanel>
-        <TabPanel value={value} index={3}></TabPanel>
+        <TabPanel value={value} index={3}>
+          <Settings
+            ChangePasswordHandler={ChangePasswordHandler}
+            setShowModalConfirmDelition={setShowModalConfirmDelition}
+          />
+        </TabPanel>
+        <TabPanel value={value} index={4}></TabPanel>
       </Box>
+
     </>
   )
 }

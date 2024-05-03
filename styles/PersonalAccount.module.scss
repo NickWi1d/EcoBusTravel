@@ -1,7 +1,19 @@
+.Btn{
+    background-color: var(--main-bg-btn-color);
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
 .emailInput {
     label {
         padding: 0;
     }
+
     width: 50%;
 }
 
@@ -20,13 +32,14 @@
     margin: 8px 0;
     cursor: pointer;
     width: 30%;
+
     &:hover {
         background-color: var(--main-bg-btn-hover-color)
     }
 }
 
 .infoForm {
-    margin-top: 3%;
+    // margin-top: 3%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -39,24 +52,53 @@
     padding: 2%;
 }
 
+.chengePasswordBox {
+    border: 1.5px solid var(--main-bg-btn-color);
+    margin-top: 20px;
+    padding: 2%;
+}
+
 .delLink {
     color: var(--main-bg-btn-color);
+
     &:hover {
         text-decoration: underline;
     }
 }
-.tabsBox{
+
+.tabsBox {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.logo{
+
+.logo {
     color: var(--main-bg-btn-color);
 }
-.logOutBtn{
+
+.logOutBtn {
+    top: 10px;
     background-color: var(--main-bg-btn-color);
     width: 70%;
-    &:hover{
-        background-color:var(--main-bg-btn-hover-color);
+
+    &:hover {
+        background-color: var(--main-bg-btn-hover-color);
     }
+}
+
+/// My passenger
+
+.passengerInfo{
+    width: 500px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2), -2px -2px 10px rgba(0, 0, 0, 0.2);
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 2%;
+    margin-bottom: 2%;
+}
+.fio{
+    display: flex;
+    justify-content: space-between;
 }

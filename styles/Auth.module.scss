@@ -1,9 +1,11 @@
-.error{
+.error {
     color: red;
 }
-.cursorLink{
+
+.cursorLink {
     cursor: pointer;
 }
+
 %fromBase {
     display: flex;
     flex-direction: column;
@@ -15,26 +17,29 @@
 
 .LoginForm {
     @extend %fromBase;
-    padding-top: 100px;
+    padding-top: 60px;
 
-    label{
+    label {
         padding-left: 35%;
         padding-top: 2%;
     }
-    p{
+
+    p {
         padding-top: 2%;
     }
 }
-.signUpForm{
+
+.signUpForm {
     @extend %fromBase;
-    padding-top: 70px;
+    // padding-top: 70px;
 }
 
 .emailInput,
 .passwordInput {
-    label{
+    label {
         padding: 0;
     }
+
     width: 60%;
     // display: inline-block;
 
@@ -50,6 +55,7 @@
     margin: 8px 0;
     cursor: pointer;
     width: 60%;
+
     // opacity: 0.9;
     &:hover {
         background-color: #134bc4;
