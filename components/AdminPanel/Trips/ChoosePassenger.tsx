@@ -1,4 +1,4 @@
-import { BusTrip, ExtendPassenger, Passenger, SeatData, SeatsArray } from '@/types/types'
+import { ExtendPassenger, Passenger, SeatData, SeatsArray } from '@/types/types'
 import React from 'react'
 import styles from '@/styles/Admin.module.scss'
 
@@ -9,8 +9,8 @@ const ChoosePassenger = ({ setIsShowSeatWindow, clickedPalce, selectedSeat, setS
                 if (index === clickedPalce) {
                     return {
                         orderId: selectedSeat.orderId,
-                        user: user.user,
                         available: false,
+                        user: user.user,
                         owner: passenger
                     }
                 }

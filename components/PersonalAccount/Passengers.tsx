@@ -1,4 +1,4 @@
-import { Passenger, documentType } from '@/types/types'
+import { Passenger } from '@/types/types'
 import styles from '@/styles/PersonalAccount.module.scss'
 import React, { MouseEvent, useEffect, useState } from 'react'
 import Modal from "@/components/ModalWindows/Modal";

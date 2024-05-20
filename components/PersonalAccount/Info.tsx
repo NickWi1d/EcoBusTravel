@@ -1,7 +1,7 @@
 
 import { TextField, Button } from '@mui/material'
 import React, { FC, MouseEvent } from 'react'
-import AlertComponent from '../Alert'
+import AlertComponent from '../ModalWindows/Alert'
 import styles from '@/styles/PersonalAccount.module.scss'
 import { CustomAlertType } from '@/types/types'
 
@@ -22,10 +22,12 @@ interface Info {
     alertType: CustomAlertType,
     alertText: string,
 
-    updateUserInfoHandler: (e: MouseEvent<HTMLFormElement>) => void
+    updateUserInfoHandler: (e: MouseEvent<HTMLFormElement>) => void,
+    setPhoneNumber: React.Dispatch<React.SetStateAction<string>>, 
+    phoneNumber: string
 }
 
-const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, surname, name, username, showAlert, setShowAlert, alertType, alertText, updateUserInfoHandler }) => {
+const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, surname, name, username, showAlert, setShowAlert, alertType, alertText, updateUserInfoHandler, setPhoneNumber, phoneNumber }) => {
     return (
         <form className={styles.infoForm} onSubmit={updateUserInfoHandler}>
             {showAlert && (
@@ -80,17 +82,16 @@ const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, sur
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
-            {/* <TextField
-              className={styles.emailInput}
-              margin='normal'
-              required
-              id="password"
-              type='text'
-              label="пароль"
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            /> */}
+            <TextField
+                className={styles.emailInput}
+                margin='normal'
+                id="phoneNumber"
+                type='text'
+                label="Номер телефона"
+                variant="outlined"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+            />
             <Button variant="contained" type='submit' className={styles.SaveBtn}>Сохранить</Button>
         </form>
     )

@@ -1,6 +1,6 @@
 import { MongoClient, ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase, closeDatabaseConnection } from '../../lib/mongodb'
+import { connectToDatabase, closeDatabaseConnection, getDB } from '../../lib/mongodb'
 import { BusTrip, Customer, IUser, Passenger, SeatsArray } from "@/types/types";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,7 +28,8 @@ function TransformQueryParams(queryParams: Record<string, string>) {
 }
 
 const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => {
-  const db = await connectToDatabase();
+  const { db } = await connectToDatabase();
+  // const db = getDB()
   try {
     const { tripData } = req.body as { tripData: BusTrip }
     const addNewTrip = await db.collection('BusTrips').insertOne({
@@ -45,12 +46,14 @@ const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => 
       seats: tripData.seats,
       startTime: tripData.startTime,
       destination: tripData.destination,
-      departure: tripData.departure
+      departure: tripData.departure,
+      destinationAddress: tripData.destinationAddress,
+      departureAddress: tripData.departureAddress
     })
     if (addNewTrip.acknowledged === true) {
-      res.status(200).json({ message: `Trip was successfully added`, addNewTrip })
+      return res.status(200).json({ message: `Trip was successfully added`, addNewTrip })
     } else {
-      res.status(404).json({ message: 'Something went wrongd' })
+      return res.status(404).json({ message: 'Something went wrongd' })
     }
   } catch (error) {
     console.error('Error during registration:', error);
@@ -60,7 +63,8 @@ const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => 
 
 
 const handleLogin = async (req: NextApiRequest, res: NextApiResponse) => {
-  const db = await connectToDatabase();
+  const { db } = await connectToDatabase();
+  // const db = getDB()
   try {
     const queryParams = req.query as Record<string, string>
     const params = TransformQueryParams(queryParams)
@@ -70,9 +74,9 @@ const handleLogin = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const busTrips = await db.collection('BusTrips').find(params).toArray();
       if (busTrips) {
-        res.status(200).json({ message: 'The results are found', busTrips });
+        return res.status(200).json({ message: 'The results are found', busTrips });
       } else {
-        res.status(401).json({ message: 'There are no results' });
+        return res.status(401).json({ message: 'There are no results' });
       }
 
     }
@@ -83,12 +87,13 @@ const handleLogin = async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
-  const db = await connectToDatabase();
+  const { db } = await connectToDatabase();
+  // const db = getDB()
   try {
     const { id, type } = req.body as { id: string, type: typeOfUpDate }
     if (id) {
       if (type === 'SEAT_RESERVATION') {
-        const { availableSeats, amountOfTickets, reservedSeats, seats, selectedSeats, currentPassengers, customer, user, orderId } = req.body as { id: string, availableSeats: number, reservedSeats: number, seats: SeatsArray, amountOfTickets: number, selectedSeats: string[], currentPassengers: Passenger[], customer:Customer, user:{uid:string, username:string}, orderId:string }
+        const { availableSeats, amountOfTickets, reservedSeats, seats, selectedSeats, currentPassengers, customer, user, orderId } = req.body as { id: string, availableSeats: number, reservedSeats: number, seats: SeatsArray, amountOfTickets: number, selectedSeats: string[], currentPassengers: Passenger[], customer: Customer, user: { uid: string, username: string, name: string, surname: string, email: string }, orderId: string }
         console.log('reservedSeats', typeof (reservedSeats))
         console.log('amountOfTickets', typeof (amountOfTickets))
         console.log('currentPassengers', currentPassengers)
@@ -104,15 +109,16 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
                 if (selectedSeats.includes((index + 1).toString())) {
                   return {
                     ...seat,
-                    orderId:orderId,
+                    orderId: orderId,
+                    available: false,
                     user: {
                       _id: user.uid,
                       username: user.username,
                       email: customer.email,
                       surname: customer.surname,
-                      name: customer.name
+                      name: customer.name,
+                      phoneNumber: customer.phoneNumber
                     },
-                    available: false,
                     owner: currentPassengers[selectedSeats.indexOf((index + 1).toString())]
                   }
                 } else {
@@ -125,9 +131,9 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         );
         if (updateTripInfo.modifiedCount === 1) {
-          res.status(200).json({ message: 'BusTrip was successfully updated' })
+          return res.status(200).json({ message: 'BusTrip was successfully updated' })
         } else if (updateTripInfo.matchedCount === 0) {
-          res.status(404).json({ message: 'Something went wrong' })
+          return res.status(404).json({ message: 'Something went wrong' })
         }
       } else if (type === 'FULL_UPDATE_TRIP_INFO') {
         const { trip } = req.body as { trip: BusTrip }
@@ -149,34 +155,44 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
               seats: trip.seats,
               startTime: trip.startTime,
               destination: trip.destination,
-              departure: trip.departure
+              departure: trip.departure,
+              destinationAddress: trip.destinationAddress,
+              departureAddress: trip.departureAddress
             }
           }
         )
         if (fullUpDateTripIno.modifiedCount === 1) {
-          res.status(200).json({ message: 'BusTrip was successfully updated' })
+          return res.status(200).json({ message: 'BusTrip was successfully updated' })
         } else if (fullUpDateTripIno.matchedCount === 0) {
-          res.status(404).json({ message: 'Something went wrong' })
+          return res.status(404).json({ message: 'Something went wrong' })
         }
       } else if (type === 'UPDATE_SEAT_TRIP_INFO') {
-        const { user, seats, seatsTripData } = req.body as { user: IUser, seats: Array<string>, seatsTripData: SeatsArray }
+        const { user, seats, seatsTripData } = req.body as { user: IUser, seats: Array<number>, seatsTripData: SeatsArray }
+        // console.log('user', user)
+        console.log('seats', seats)
+        // console.log('seatsTripData', seatsTripData)
+
         const fullUpDateTripIno = await db.collection('BusTrips').updateOne(
           { _id: new ObjectId(id) },
           {
             $set: {
-              seats: [...seatsTripData.map(seat => {
+              seats: seatsTripData.map((seat, index) => {
                 if (seat.available === false && seat.owner !== null) {
-                  if (seats.includes(seat.owner.id)) {
+                  console.log('пизда');
+                  if (seats.includes(index + 1)) {
+
                     let userPassanger = user.passengers.filter(passenger => passenger.id === seat.owner?.id)[0]
                     return {
+                      orderId: seat.orderId,
+                      available: false,
                       user: {
                         _id: user._id,
                         username: user.username,
                         email: user.email,
                         surname: user.surname,
                         name: user.name,
+                        phoneNumber:user.phoneNumber
                       },
-                      available: false,
                       owner: {
                         id: userPassanger.id,
                         birthDate: userPassanger.birthDate,
@@ -192,7 +208,7 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
                 } else {
                   return seat
                 }
-              })]
+              })
             }
           }
         )
@@ -201,41 +217,43 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
         } else if (fullUpDateTripIno.matchedCount === 0) {
           res.status(404).json({ message: 'Something went wrong' })
         }
-      }else if (type === 'DELETE_ORDER') {
-        const { seats, orderId, availableSeats, reservedSeats, amountOfTickets} = req.body as { seats: SeatsArray, orderId:string, availableSeats:number, reservedSeats:number, amountOfTickets:number }
-        console.log('seats',seats);
-        
+      } else if (type === 'DELETE_ORDER') {
+        const { seats, orderId, availableSeats, reservedSeats, amountOfTickets } = req.body as { seats: SeatsArray, orderId: string, availableSeats: number, reservedSeats: number, amountOfTickets: number }
+        console.log('availableSeats', availableSeats);
+        console.log('reservedSeats', reservedSeats);
+        console.log('amountOfTickets', amountOfTickets);
+
         const deleteOrder = await db.collection('BusTrips').updateOne(
           { _id: new ObjectId(id) },
           {
             $set: {
               availableSeats: availableSeats + amountOfTickets,
               reservedSeats: reservedSeats - amountOfTickets,
-              seats: [...seats.map(seat => {
-                if(seat.orderId === orderId){
+              seats: seats.map(seat => {
+                if (seat.orderId === orderId) {
                   return {
                     ...seat,
-                    orderId:'',
-                    user:null,
-                    available:true,
+                    orderId: '',
+                    available: true,
+                    user: null,
                     owner: null
                   }
-                }else{
-                  return {...seat}
+                } else {
+                  return seat
                 }
-              })]
+              })
             }
           }
         )
         if (deleteOrder.modifiedCount === 1) {
-          res.status(200).json({ message: 'BusTrip was successfully updated' })
+          return res.status(200).json({ message: 'BusTrip was successfully updated' })
         } else if (deleteOrder.matchedCount === 0) {
-          res.status(404).json({ message: 'Something went wrong' })
+          return res.status(404).json({ message: 'Something went wrong' })
         }
       }
     }
     else {
-      res.status(400).json({ message: 'Invalid or missing trup uid' });
+      return res.status(400).json({ message: 'Invalid or missing trup uid' });
     }
   } catch (error) {
     console.error('Error during deletion:', error);
@@ -243,7 +261,8 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
-  const db = await connectToDatabase();
+  const { db } = await connectToDatabase();
+  // const db = getDB()
   try {
     const { uid } = req.query as { uid: string }
     if (uid && typeof uid === 'string') {
@@ -251,9 +270,9 @@ const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
       const uidObj = new ObjectId(uid)
       const deleteTrip = await db.collection('BusTrips').deleteOne({ "_id": uidObj });
       if (deleteTrip.deletedCount === 1) {
-        res.status(200).json({ message: 'User successfully deleted' });
+        return res.status(200).json({ message: 'User successfully deleted' });
       } else {
-        res.status(404).json({ message: 'User not found or already deleted' });
+        return res.status(404).json({ message: 'User not found or already deleted' });
       }
 
     } else {

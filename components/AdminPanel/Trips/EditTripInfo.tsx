@@ -69,10 +69,12 @@ const EditTripInfo = (
     const [startTime, setStartTime] = useState('')
     const [destination, setDestination] = useState('')
     const [departure, setDeparture] = useState('')
+    const [destinationAddress, setDestinationAddress] = useState('')
+    const [departureAddress, setDepartureAddress] = useState('')
     const [seats, setSeats] = useState<SeatsArray>(Array.from({ length: 50 }, () => ({
         orderId:'',
-        user: null,
         available: true,
+        user: null,
         owner: null
     })))
     const [isShowSeatWindow, setIsShowSeatWindow] = useState(false)
@@ -92,6 +94,8 @@ const EditTripInfo = (
         setStartTime(selectedTrip.startTime)
         setDestination(selectedTrip.destination)
         setDeparture(selectedTrip.departure)
+        setDestinationAddress(selectedTrip.destinationAddress)
+        setDepartureAddress(selectedTrip.departureAddress)
         setSeats(selectedTrip.seats)
         setAreThereAnyPassengers(selectedTrip.seats.filter(seat => !seat.available).length !== 0)
     }, [])
@@ -113,7 +117,9 @@ const EditTripInfo = (
                 seats: seats,
                 startTime: startTime,
                 destination: destination,
-                departure: departure
+                departure: departure,
+                destinationAddress: destinationAddress,
+                departureAddress: departureAddress
             }
         }
         )

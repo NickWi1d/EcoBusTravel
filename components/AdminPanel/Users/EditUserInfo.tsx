@@ -10,8 +10,8 @@ import ShowUserTripInfo from './ShowUserTripInfo';
 
 
 interface DeletedTrips {
-    orderId:string, tripId:string, amountOfTickets:number
-  }
+    orderId: string, tripId: string, amountOfTickets: number
+}
 
 
 const PassengerListColumns: GridColDef[] = [
@@ -88,7 +88,7 @@ const EditUserInfo = ({
     upDateUserInfoHandler: (id: string, tripsId: Array<string>) => void,
     addNewUserHandler: () => void,
     deleteUserHandler: (uid: string) => void,
-    setDeletedTrips:React.Dispatch<React.SetStateAction<DeletedTrips[]>>
+    setDeletedTrips: React.Dispatch<React.SetStateAction<DeletedTrips[]>>
 }) => {
 
     const [username, setUsername] = useState('')
@@ -98,6 +98,7 @@ const EditUserInfo = ({
     const [passengers, setPassengers] = useState<Passenger[] | []>([])
     const [trips, setTrips] = useState<UserTrip[] | []>([])
     const [password, setPassword] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('')
 
 
     const [selectedUserPassenger, setSelectedUserPassenger] = useState<Passenger>({
@@ -126,6 +127,8 @@ const EditUserInfo = ({
         startTime: '',
         destination: '',
         departure: '',
+        destinationAddress: '',
+        departureAddress: '',
     })
 
 
@@ -179,6 +182,8 @@ const EditUserInfo = ({
             startTime: trip.tripData.startTime,
             destination: trip.tripData.destination,
             departure: trip.tripData.departure,
+            destinationAddress: trip.tripData.destinationAddress,
+            departureAddress: trip.tripData.departureAddress,
             passengersAmount: trip.seats.length
         }
     })
@@ -191,6 +196,7 @@ const EditUserInfo = ({
         setPassengers(selectedUser.passengers)
         setTrips(selectedUser.trips)
         setPassword(selectedUser.password)
+        setPhoneNumber(selectedUser.phoneNumber)
     }, [])
 
     useEffect(() => {
@@ -202,11 +208,12 @@ const EditUserInfo = ({
                 email: email,
                 surname: surname,
                 name: name,
+                phoneNumber: phoneNumber,
                 passengers: passengers,
                 trips: trips,
             }
         })
-    }, [username, surname, name, email, passengers, trips, password])
+    }, [username, surname, name, email, passengers, trips, password, phoneNumber])
 
     useEffect(() => {
         if (isShowEditUserPassengerInfo === false && selectedUserPassenger && deleteedUserPassengerId === null) {
@@ -226,6 +233,36 @@ const EditUserInfo = ({
                     return passanger
                 })
                 return newPassengersList
+            })
+            setTrips(prev => {
+                let newTrips = prev.map(trip => {
+                    let newSeats = trip.seats.map(seat => {
+                        console.log(seat.id)
+                        console.log(selectedUserPassenger.id)
+                        if (seat.id === selectedUserPassenger.id) {
+                            console.log('yes, bitch', selectedUserPassenger);
+                            
+                            return {
+                                id: seat.id,
+                                name: selectedUserPassenger.name,
+                                surname: selectedUserPassenger.surname,
+                                patronymic: selectedUserPassenger.patronymic,
+                                documentNumber: selectedUserPassenger.documentNumber,
+                                birthDate: selectedUserPassenger.birthDate,
+                                gender: selectedUserPassenger.gender,
+                                seatNumber: seat.seatNumber
+                            }
+                        }
+                        return seat
+                    })
+                    return {
+                        orderId: trip.orderId,
+                        tripId: trip.tripId,
+                        tripData: trip.tripData,
+                        seats: newSeats
+                    }
+                })
+                return newTrips
             })
         }
         if (selectedUserPassenger && isShowEditUserPassengerInfo === false && isAddNewUserPassengerInfo === true) {
@@ -254,6 +291,7 @@ const EditUserInfo = ({
     }, [selectedUserPassenger, isShowEditUserPassengerInfo, isAddNewUserPassengerInfo, deleteedUserPassengerId])
 
 
+
     function cancelBtn() {
         setIsShowEditUserInfo(false)
     }
@@ -261,8 +299,8 @@ const EditUserInfo = ({
     function EditUserInfo(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setIsAddNewUser(false)
-        isAddNewUser ? addNewUserHandler() : 
-        upDateUserInfoHandler(selectedUser._id, [...trips.map(trip => trip.tripId)])
+        isAddNewUser ? addNewUserHandler() :
+            upDateUserInfoHandler(selectedUser._id, [...trips.map(trip => trip.tripId)])
         setIsShowEditUserInfo(false)
     }
 
@@ -310,6 +348,7 @@ const EditUserInfo = ({
                         setIsAddNewUserPassengerInfo={setIsAddNewUserPassengerInfo}
                         setSelectedUserPassenger={setSelectedUserPassenger}
                         setDeleteedUserPassengerId={setDeleteedUserPassengerId}
+                        setTrips={setTrips}
                     ></EditUserPassengerInfo>
                 </Modal>
             }
@@ -387,6 +426,17 @@ const EditUserInfo = ({
                         variant="outlined"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        onFocus={(e) => e.target.select()}
+                    />
+                    <TextField
+
+                        // required
+                        id="phoneNumber"
+                        type='text'
+                        label="Номер телефона"
+                        variant="outlined"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                         onFocus={(e) => e.target.select()}
                     />
                 </div>

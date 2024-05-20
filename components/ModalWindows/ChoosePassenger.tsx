@@ -1,7 +1,6 @@
 import React from 'react'
 import { Passenger } from '@/types/types'
 import styles from '@/styles/CreateOrder.module.scss'
-import { documentType } from '@/types/types'
 
 const ChoosePassenger = ({ setShowModal, userPassengers, setPassengerInfo }: { setShowModal: React.Dispatch<React.SetStateAction<boolean>>, userPassengers: Passenger[],setPassengerInfo: (surname:string, name:string, patronymic:string, documentNumber:string, birthDate:string, gender:string) => void}) => {
     

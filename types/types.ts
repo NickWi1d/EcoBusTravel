@@ -22,6 +22,18 @@ export interface ServerResponseGetAllUsers {
     message: string
     users: IUser[]
 }
+export interface ServerResponseGetCitiesData {
+    message: string
+    cities: Cities[]
+}
+export interface ServerResponseGetBusesData {
+    message: string
+    buses: Bus[]
+}
+export interface Cities{
+    _id: string
+    cities: string[]
+}
 
 export interface Passenger {
     id: string,
@@ -43,6 +55,7 @@ export interface ExtendPassenger {
         email: string
         surname: string
         name: string,
+        phoneNumber:string
     },
     passengers: Passenger[]
 }
@@ -52,8 +65,9 @@ export interface IUser {
     password: string
     email: string
     surname: string
-    name: string,
-    passengers: Passenger[],
+    name: string
+    phoneNumber:string
+    passengers: Passenger[]
     trips: UserTrip[]
 }
 export interface UserTrip {
@@ -73,7 +87,9 @@ export interface UserTrip {
         reservedSeats: number,
         startTime: string,
         destination: string,
-        departure: string
+        departure: string,
+        destinationAddress:string,
+        departureAddress: string 
     }
 
 }
@@ -88,14 +104,15 @@ export type CustomAlertType = "error" | "warning" | "info" | "success";
 
 export interface SeatData {
     orderId: string,
+    available: boolean;
     user: {
         _id: string
         username: string
         email: string
         surname: string
         name: string,
+        phoneNumber:string
     } | null,
-    available: boolean;
     owner: Passenger | null;
 }
 
@@ -118,7 +135,9 @@ export interface BusTrip {
     seats: SeatsArray
     startTime: string,
     destination: string,
-    departure: string
+    departure: string,
+    destinationAddress:string,
+    departureAddress: string 
 }
 
 export interface Params {
@@ -131,7 +150,8 @@ export interface Params {
 }
 
 export interface QueryParams {
-    [key: string]: string | string[] | undefined
+    // [key: string]: string | string[] | undefined
+    
 }
 
 
@@ -151,11 +171,22 @@ export interface CustomUserTrip {
     reservedSeats: number,
     startTime: string,
     destination: string,
-    departure: string
+    departure: string,
+    destinationAddress:string,
+    departureAddress: string 
 }
 export interface Customer {
     surname: string,
     name: string,
     phoneNumber: string,
     email: string,
+}
+export interface DeletedTrips {
+    orderId:string, tripId:string, amountOfTickets:number
+}
+export interface Bus {
+    _id:string,
+    type:typeOfBus,
+    amountOfSeats:number,
+    plateNumber:string
 }

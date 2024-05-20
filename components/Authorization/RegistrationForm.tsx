@@ -1,27 +1,27 @@
 import React, { MouseEvent, useState } from 'react'
 import styles from '@/styles/Auth.module.scss'
 import { Link, TextField, Button } from '@mui/material'
-import AlertComponent  from '@/components/Alert'
+import AlertComponent from '@/components/ModalWindows/Alert'
 import { CustomAlertType } from '@/types/types'
 
 
 interface SignUpProps {
-  Registration: (username: string, password: string, email:string) => void,
+  Registration: (username: string, password: string, email: string) => void,
   isHaveAnAccount: boolean,
   setIsHaveAnAccount: React.Dispatch<React.SetStateAction<boolean>>,
-  error: string,
-  setError: React.Dispatch<React.SetStateAction<string>>,
+  alertText: string,
+  setAlertText: React.Dispatch<React.SetStateAction<string>>,
   showAlert: boolean,
-  setShowAlert:React.Dispatch<React.SetStateAction<boolean>>,
-  alertType:CustomAlertType,
-  setAlertType:React.Dispatch<React.SetStateAction<CustomAlertType>>,
-  AdminRoute:()=>void
+  setShowAlert: React.Dispatch<React.SetStateAction<boolean>>,
+  alertType: CustomAlertType,
+  setAlertType: React.Dispatch<React.SetStateAction<CustomAlertType>>,
+  AdminRoute: () => void
 }
 
 const ADMIN_LOGIN = 'admin'
 const ADMIN_PASSWORD = 'admin'
 
-const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount, setIsHaveAnAccount, error, setError, showAlert, setShowAlert, alertType, setAlertType, AdminRoute }) => {
+const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount, setIsHaveAnAccount, alertText, setAlertText, showAlert, setShowAlert, alertType, setAlertType, AdminRoute }) => {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,13 +34,13 @@ const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount
     setPassword('')
     setDuplicatePassword('')
     setEmail('')
-    setError('')
+    setAlertText('')
   };
   const handleRegistration = (e: MouseEvent<HTMLFormElement>) => {
-    setError('')
+    setAlertText('')
     e.preventDefault()
     console.log(ADMIN_LOGIN)
-    if(username === ADMIN_LOGIN && password === ADMIN_PASSWORD){
+    if (username === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
       AdminRoute()
       console.log('rere')
       return
@@ -53,7 +53,7 @@ const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount
         if (password === duplicatePassword) {
           Registration(username, password, email)
         } else {
-          setError('Пароли не совпадают')
+          setAlertText('Пароли не совпадают')
           setAlertType('error')
           setShowAlert(true)
         }
@@ -64,13 +64,13 @@ const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount
     }
   }
   return (
-      <form onSubmit={handleRegistration} className={isHaveAnAccount === true ? styles.LoginForm : styles.signUpForm}>
+    <form onSubmit={handleRegistration} className={isHaveAnAccount === true ? styles.LoginForm : styles.signUpForm}>
       {showAlert && (
         <AlertComponent
           showAlert={showAlert}
           setShowAlert={setShowAlert}
           type={alertType}
-          error={error}
+          text={alertText}
         />
       )}
       <strong><h1>{isHaveAnAccount === true ? 'Вход' : 'Регистрация'}</h1></strong>

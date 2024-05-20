@@ -1,7 +1,6 @@
 import React, { FC, RefObject } from 'react'
 import styles from '@/styles/CreateOrder.module.scss'
 import { Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material'
-import { documentType } from '@/types/types'
 
 interface PassengerFormProps {
     birthDate: string,
@@ -23,7 +22,7 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
         <div>
             <div className={styles.fio} >
                 <TextField
-                    // required
+                    required
                     id="surname"
                     type='text'
                     label="Фамилия"
@@ -33,7 +32,7 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     onFocus={(e) => e.target.select()}
                 />
                 <TextField
-                    // required
+                    required
                     id="name"
                     type='text'
                     label="Имя"
@@ -43,8 +42,7 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     onFocus={(e) => e.target.select()}
                 />
                 <TextField
-
-                    // required
+                    required
                     id="patronymic"
                     type='text'
                     label="Отчество"
@@ -59,9 +57,10 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     <div className={`${styles.maleBnt} ${gender === 'мужской' && styles.pickedMaleBnt}`} onClick={() => setGender('мужской')}>М.</div>
                     <div className={`${styles.femaleBtn}  ${gender === 'женский' && styles.pickedFemaleBnt}`} onClick={() => setGender('женский')}>Ж.</div>
                 </div> */}
-                <FormControl>
+                <FormControl required>
                     <FormLabel id="demo-row-radio-buttons-group-label">Пол</FormLabel>
                     <RadioGroup
+                        
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
@@ -73,6 +72,7 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     </RadioGroup>
                 </FormControl>
                 <TextField
+                    required
                     className={styles.documentNumber}
                     // required
                     id='documentNumber'
@@ -82,11 +82,12 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     value={documentNumber}
                     onChange={(e) => setDocumentNumber(e.target.value)}
                     onFocus={(e) => e.target.select()}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
+                    // InputLabelProps={{
+                    //     shrink: true,
+                    // }}
                 />
                 <TextField
+                    required
                     className={`${styles.birthDate}`}
                     // required
                     id="birthDate"

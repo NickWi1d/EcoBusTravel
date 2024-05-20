@@ -4,10 +4,19 @@ import { Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectCha
 import Modal from "@/components/ModalWindows/Modal";
 import ChoosePassenger from '../ModalWindows/ChoosePassenger';
 import { Passenger } from '@/types/types';
-import { documentType } from '@/types/types';
 import PassengerForm from '../PersonalAccount/PassengerForm';
 
-const PassengerDataCard = ({ TicketNumber, userPassengers, setCurrentPassengers }: { TicketNumber: number, userPassengers: Passenger[], setCurrentPassengers: React.Dispatch<React.SetStateAction<Passenger[]>> }) => {
+const PassengerDataCard = ({ 
+    TicketNumber, 
+    userPassengers, 
+    setCurrentPassengers,
+    currentPassenger
+}: { 
+    TicketNumber: number, 
+    userPassengers: Passenger[], 
+    setCurrentPassengers: React.Dispatch<React.SetStateAction<Passenger[]>>,
+    currentPassenger:Passenger
+}) => {
     const [surname, setSurname] = useState('')
     const [name, setName] = useState('')
     const [patronymic, setPatronymic] = useState('')
@@ -26,11 +35,24 @@ const PassengerDataCard = ({ TicketNumber, userPassengers, setCurrentPassengers 
         setGender(gender)
     }
     useEffect(() => {
-        setCurrentPassengers(prev => {
-            prev[TicketNumber - 1] = { id:userPassengers[TicketNumber - 1].id, surname, name, patronymic, documentNumber, birthDate, gender }
-            return prev
-        })
-    }, [surname, name, patronymic, document, documentNumber, birthDate, gender])
+        // if(surname.length !== 0 && name.length !== 0 && patronymic.length !== 0 && documentNumber.length !== 0 && birthDate.length !== 0 && gender.length !== 0){
+            setCurrentPassengers(prev => {
+                prev[TicketNumber - 1] = { id:userPassengers[TicketNumber - 1].id, surname, name, patronymic, documentNumber, birthDate, gender }
+                return prev
+            })
+        // }
+    }, [surname, name, patronymic, documentNumber, birthDate, gender])
+
+
+    useEffect(() => {
+        setSurname(currentPassenger.surname)
+        setName(currentPassenger.name)
+        setPatronymic(currentPassenger.patronymic)
+        setDocumentNumber(currentPassenger.documentNumber)
+        setBirthDate(currentPassenger.birthDate)
+        setGender(currentPassenger.gender)
+    }, [])
+    
 
     return (
         <div className={styles.passengerDataCard}>

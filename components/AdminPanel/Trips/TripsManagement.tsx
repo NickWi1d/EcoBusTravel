@@ -76,7 +76,9 @@ const TripsManagement = (
             seats: trip.seats,
             startTime: trip.startTime,
             destination: trip.destination,
-            departure: trip.departure
+            departure: trip.departure,
+            destinationAddress: trip.destinationAddress,
+            departureAddress: trip.departureAddress
         }
     })
 
@@ -100,14 +102,16 @@ const TripsManagement = (
             travelTime: '',
             reservedSeats: 0,
             seats: Array.from({ length: 50 }, () => ({
-                orderId:'',
-                user:null,
+                orderId: '',
+                user: null,
                 available: true,
                 owner: null
             })),
             startTime: '',
             destination: '',
-            departure: ''
+            departure: '',
+            destinationAddress: '',
+            departureAddress: ''
         })
     }
 

@@ -1,7 +1,7 @@
 import React, { FC, MouseEvent, useEffect, useRef } from 'react'
 import PassengerForm from '../PersonalAccount/PassengerForm'
 import { SelectChangeEvent, Button } from '@mui/material'
-import { Passenger, documentType } from '@/types/types'
+import { Passenger } from '@/types/types'
 
 interface PassengerFormProps {
     birthDate: string,

@@ -1,4 +1,4 @@
-import { Passenger } from '@/types/types'
+import { Passenger, UserTrip } from '@/types/types'
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material'
 import React, { FormEvent, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +8,8 @@ const EditUserPassengerInfo = ({ selectedUserPassenger,
     isAddNewUserPassengerInfo,
     setIsAddNewUserPassengerInfo,
     setSelectedUserPassenger,
-    setDeleteedUserPassengerId
+    setDeleteedUserPassengerId,
+    setTrips
 }: {
     selectedUserPassenger: Passenger,
     sertIsShowEditUserPassengerInfo: React.Dispatch<React.SetStateAction<boolean>>,
@@ -16,6 +17,7 @@ const EditUserPassengerInfo = ({ selectedUserPassenger,
     setIsAddNewUserPassengerInfo: React.Dispatch<React.SetStateAction<boolean>>,
     setSelectedUserPassenger: React.Dispatch<React.SetStateAction<Passenger>>,
     setDeleteedUserPassengerId: React.Dispatch<React.SetStateAction<string | null>>,
+    setTrips: React.Dispatch<React.SetStateAction<UserTrip[] | []>>
 }) => {
 
     const [name, setName] = useState('')
@@ -47,6 +49,7 @@ const EditUserPassengerInfo = ({ selectedUserPassenger,
                 gender: gender
             }
         })
+        
     }, [name, surname, patronymic, documentNumber, birthDate, gender])
 
 
@@ -64,15 +67,15 @@ const EditUserPassengerInfo = ({ selectedUserPassenger,
         setIsAddNewUserPassengerInfo(false)
         sertIsShowEditUserPassengerInfo(false)
         setSelectedUserPassenger({
-                id: '',
-                name: '',
-                surname: '',
-                patronymic: '',
-                documentNumber: '',
-                birthDate: '',
-                gender: ''
+            id: '',
+            name: '',
+            surname: '',
+            patronymic: '',
+            documentNumber: '',
+            birthDate: '',
+            gender: ''
         })
-        
+
     }
 
     return (

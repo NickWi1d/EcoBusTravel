@@ -1,16 +1,16 @@
 "use client";
 import React, { useState, FormEvent, FC } from 'react';
 import { useRouter } from 'next/navigation';
-import { TextField, Button, ButtonGroup, Box, Select, MenuItem, IconButton } from '@mui/material';
+import { TextField, Button, ButtonGroup, Box, Select, MenuItem, IconButton, Autocomplete } from '@mui/material';
 import { getCurrentDate } from '@/components/SearchTrips/Filter';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import { Params } from '@/types/types';
 
-export const SearchTrips: FC = () => {
+export const SearchTrips = ({ cities }: { cities: string[] }) => {
     const router = useRouter();
 
-    const [from, setFrom] = useState('Минск');
+    const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
     const [date, setDate] = useState(getCurrentDate());
     const [amount, setAmount] = useState('1');
@@ -24,6 +24,8 @@ export const SearchTrips: FC = () => {
         router.push(`/SearchResults?${queryString}`);
 
     };
+
+    const currentDate = new Date().toISOString().split('T')[0];
 
     return (
         <div className='SearchSection'>
@@ -42,28 +44,50 @@ export const SearchTrips: FC = () => {
                 })}
                 className='SearchForm'>
                 <div className='inputSection'>
-                    <TextField
-                        className='SearchParamsInput'
-                        // required
-                        id="from"
-                        type='text'
-                        label="Откуда?"
-                        variant="outlined"
-                        value={from}
-                        onChange={(e) => setFrom(e.target.value)}
-                        onFocus={(e) => e.target.select()} />
+                    <Autocomplete   
+                        value={from} 
+                        disablePortal
+                        id="combo-box-demo"
+                        options={cities}
+                        sx={{ width: 300}}
+                        onChange={(event: any, newValue: string | null) => {
+                            setFrom(newValue || '')
+                        }}
+                        renderInput={(params) => <TextField
+                            {...params}
+                            className='SearchParamsInput'
+                            required
+                            id="from"
+                            type='text'
+                            label="Откуда?"
+                            variant="outlined"
+                            onChange={(e) => setFrom(e.target.value)}
+                            onFocus={(e) => e.target.select()} />}
+                    />
+
                 </div>
                 <div className='inputSection'>
-                    <TextField
-                        className='SearchParamsInput'
-                        // required
-                        id="to"
-                        type='text'
-                        label="Куда?"
-                        variant="outlined"
+                <Autocomplete    
+                        disablePortal
                         value={to}
-                        onChange={(e) => setTo(e.target.value)}
-                        onFocus={(e) => e.target.select()} />
+                        id="combo-box-demo"
+                        options={cities}
+                        sx={{ width: 300}}
+                        onChange={(event: any, newValue: string | null) => {
+                            setTo(newValue || '')
+                        }}
+                        renderInput={(params) => <TextField
+                            {...params}
+                            className='SearchParamsInput'
+                            required
+                            id="to"
+                            type='text'
+                            label="Куда?"
+                            variant="outlined"
+                            onChange={(e) => setTo(e.target.value)}
+                            onFocus={(e) => e.target.select()} />}
+                    />
+                    
                 </div>
                 <div className='inputSection'>
                     <TextField
@@ -74,7 +98,8 @@ export const SearchTrips: FC = () => {
                         variant="outlined"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        onFocus={(e) => e.target.select()} />
+                        onFocus={(e) => e.target.select()}
+                        inputProps={{ min: currentDate }} />
                 </div>
                 <div className='inputSection'>
                     {/* <InputLabel id="AmountILabel">Количество</InputLabel> */}
@@ -96,7 +121,7 @@ export const SearchTrips: FC = () => {
                     </Select>
 
                 </div>
-                <div className='buttunWrap'>    
+                <div className='buttunWrap'>
                     <Button variant="contained" type='submit' className='searchButton'>Найти</Button>
                 </div>
             </form>

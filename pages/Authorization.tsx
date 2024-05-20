@@ -49,7 +49,7 @@ const LogIn: FC = () => {
 
       if ('status' in signUpError) {
         const data = signUpError.data as any
-        setError(data.message || 'Unknown error')
+        setAlertText(data.message || 'Unknown error')
         setAlertType('error')
         setShowAlert(true)
         setTimeout(() => {
@@ -77,7 +77,7 @@ const LogIn: FC = () => {
     if (isLogInError && logInError) {
       if ('status' in logInError) {
         const data = logInError.data as any
-        setError(data.message || '')
+        setAlertText(data.message || '')
         setAlertType('error')
         setShowAlert(true)
         setTimeout(() => {
@@ -94,48 +94,12 @@ const LogIn: FC = () => {
 
 
   async function handleRegistration(username: string, password: string, email: string) {
-    signUp({ username, password, email, surname:'', name:'', passengers:[], trips:[] })
-    // const statusResult = await POST(username, password, email)
-    // if (statusResult?.message === 'SUCCESSFULLY') {
-    //   router.push('/PersonalAccount')
-    //   dispatch(logIn({
-    //     user: username
-    //   }))
-    //   localStorage.setItem('token', statusResult.uid)
-    //   localStorage.setItem('user', username)
-    //   console.log('Registration successful')
-    // }
-    // else {
-    //   setError(statusResult?.message || 'Херня')
-    //   setAlertType('error')
-    //   setShowAlert(true)
-    //   setTimeout(() => {
-    //     setShowAlert(false)
-    //   }, 3000);
-    // }
+    signUp({ username, password, email, surname:'', name:'', passengers:[], trips:[], phoneNumber:'' })
   }
 
 
   async function handleLogin(username: string, password: string, email: string) {
     fetchRepos({ username: username, type: 'LOGIN', password: password })
-    // const statusResult = await GET(username, 'LOGIN', password)
-    // if (statusResult?.message === 'SUCCESSFULLY') {
-    //   router.push('/PersonalAccount')
-    //   dispatch(logIn({
-    //     isLoggedIn: true,
-    //     user: username
-    //   }))
-    //   localStorage.setItem('token', statusResult.uid)
-    //   localStorage.setItem('user', username)
-    //   console.log('Login successful')
-    // } else {
-    //   setError(statusResult?.message || '')
-    //   setAlertType('error')
-    //   setShowAlert(true)
-    //   setTimeout(() => {
-    //     setShowAlert(false)
-    //   }, 3000);
-    // }
   }
 
   function AdminRoute(){
@@ -147,8 +111,8 @@ const LogIn: FC = () => {
         Registration={handleLogin}
         isHaveAnAccount={isHaveAnAccount}
         setIsHaveAnAccount={setIsHaveAnAccount}
-        error={error}
-        setError={setError}
+        alertText={alertText}
+        setAlertText={setAlertText}
 
 
         showAlert={showAlert}
@@ -162,8 +126,8 @@ const LogIn: FC = () => {
           Registration={handleRegistration}
           isHaveAnAccount={isHaveAnAccount}
           setIsHaveAnAccount={setIsHaveAnAccount}
-          error={error}
-          setError={setError}
+          alertText={alertText}
+          setAlertText={setAlertText}
 
 
           showAlert={showAlert}

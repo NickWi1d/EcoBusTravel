@@ -1,13 +1,16 @@
 .loader {
     margin-top: 30%;
 }
-.message{
+
+.message {
     margin-top: 30%;
     font-size: large;
 }
-.searchResultsContent{
-position: relative;
+
+.searchResultsContent {
+    position: relative;
 }
+
 /* Фильтр */
 
 // .filter{
@@ -18,11 +21,14 @@ position: relative;
 // }
 .findBnt {
     background-color: var(--main-bg-btn-color);
+
     /* background-color: #6DB935; */
     &:hover {
         background-color: var(--main-bg-btn-hover-color);
     }
+
 }
+
 .filterWrapper {
     // background-color: #3d516b;
 
@@ -30,7 +36,7 @@ position: relative;
     top: 20;
     left: 0;
     width: 25%;
-    
+
     /* Установите ширину фильтра по вашему усмотрению */
     height: 100vh;
     /* Высота фильтра равна высоте видимой области */
@@ -48,6 +54,7 @@ position: relative;
     width: 70%;
     margin-left: 27%;
 }
+
 .tripCard {
     margin-top: 2%;
     // margin-left: 7%;
@@ -58,46 +65,20 @@ position: relative;
 }
 
 .showedInfo {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 2fr 1fr;
+    display: flex;
+    justify-content: space-evenly;
+    // grid-template-columns: repeat(5, 1fr);
+    // grid-template-rows: 1fr;
+    padding: 2%;
     gap: 10px;
     background-color: #ffffff;
-    // border-top-right-radius: 10px;
-    // border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
     border-radius: 10px;
     // border: 1px solid var(--main-bg-btn-color);
     // height: 150px;
 }
 
-.gridItemLeft {
-    // padding: 20px;
-    padding-top: 5%;
-    padding-left: 4%;
-    // text-align: center;
-
-}
-.gridItemRight {
-    // padding: 20px;
-    padding-top: 5%;
-    padding-right: 4%;
-    text-align: right;
-}
-.doubleCell {
-    grid-column: span 2;
-    padding-left: 2%;
-    // justify-self: start;
-    display: flex;
-    align-items: center;
-}
-
-.doubleCellRight {
-    grid-column: span 2;
-    padding-right: 2%;
-    justify-self: end;
-    display: flex;
-    align-items: center;
-}
 
 .fromBlock,
 .toBlock,
@@ -109,41 +90,38 @@ position: relative;
 .orderBtn {
     background-color: var(--main-bg-btn-color);
     width: 100%;
-    height: 80%;
+    height: 45px;
+
     &:hover {
         background-color: var(--main-bg-btn-hover-color);
     }
 }
-.orderBlock{
+
+.orderBlock {
+    width: 20%;
     display: flex;
-    align-items: center;
+    // align-items: center;
 }
 
-.hiddenInfo{
+.hiddenInfo {
     height: 100px;
     background-color: #ffffff;
 }
-.hidden{
+
+.hidden {
     display: none;
 }
-.bottomCornersShowed{
+
+.bottomCornersShowed {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
-.bottomCornersHidden{
+
+.bottomCornersHidden {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-.showed{
+
+.showed {
     display: block;
 }
-
-
-
-
-
-
-
-
-
-

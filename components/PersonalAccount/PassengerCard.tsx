@@ -1,4 +1,4 @@
-import { Passenger, documentType } from '@/types/types'
+import { Passenger } from '@/types/types'
 import React, { MouseEvent, useState } from 'react'
 import styles from '@/styles/PersonalAccount.module.scss'
 import { IconButton, SelectChangeEvent } from '@mui/material'

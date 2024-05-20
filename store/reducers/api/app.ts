@@ -1,4 +1,4 @@
-import { ServerResponseGetUserData, ServerResponseAddUser, ServerResponseGetTripsData, ServerResponseUpDateTripInfo, ServerResponseGetAllUsers, ServerResponseAddTrip } from "@/types/types"
+import { ServerResponseGetUserData, ServerResponseAddUser, ServerResponseGetTripsData, ServerResponseUpDateTripInfo, ServerResponseGetAllUsers, ServerResponseAddTrip, ServerResponseGetCitiesData, ServerResponseGetBusesData } from "@/types/types"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
 interface IParams {
@@ -12,6 +12,8 @@ interface IBody {
     password?: string,
     email?:string
 }
+
+
 
 export const App = createApi({
     reducerPath: 'api',
@@ -30,6 +32,7 @@ export const App = createApi({
                 url:`auth`,
                 method:'POST',
                 body: body
+                
             })
         }),
         Delete: build.mutation<ServerResponseGetUserData, string>({
@@ -85,9 +88,35 @@ export const App = createApi({
                 url:`BusTrips`,
                 method:'POST',
                 body: body
+            }),
+        }),
+        getCites: build.query<ServerResponseGetCitiesData, object>({
+            query: (params:{name:string}) => ({
+                url: `Cities`,
+                params: params
             })
         }),
-
+        sendEmail: build.mutation<ServerResponseAddUser, object>({
+            query:(body:IBody)=>({
+                url:`send`,
+                method:'POST',
+                body: body
+                
+            })
+        }),
+        getBuses: build.query<ServerResponseGetBusesData, object>({
+            query: (params:IParams) => ({
+                url: `Buses`,
+                params: params
+            })
+        }),
+        upDateBusInfo: build.mutation<ServerResponseUpDateTripInfo, object>({
+            query:(body:IBody)=>({
+                url:`Buses`,
+                method:'PUT',
+                body: body
+            })
+        }),
     })
 })
 
@@ -101,5 +130,9 @@ export const {
     useLazyGetAllUsersQuery, 
     useDeletePassengerMutation, 
     useCancelTripMutation, 
-    useAddNewTripMutation
+    useAddNewTripMutation,
+    useLazyGetCitesQuery,
+    useSendEmailMutation,
+    useLazyGetBusesQuery,
+    useUpDateBusInfoMutation
 } = App

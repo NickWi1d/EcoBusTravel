@@ -1,14 +1,22 @@
 import React, { ChangeEvent, useState, FormEvent, useEffect } from 'react'
-import { TextField, Button, Slider, Typography, Input, Box, Paper } from '@mui/material'
+import { TextField, Button, Slider, Typography, Input, Box, Paper, Autocomplete, Select, MenuItem } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import styles from '@/styles/SearchResults.module.scss'
 import { BusTrip, Params, QueryParams } from '@/types/types';
+
+interface filterData {
+  from: string,
+  to: string,
+  date: string
+}
 
 interface Filter {
   params: Params,
   setQueryParamsState: React.Dispatch<React.SetStateAction<QueryParams>>,
   getSearchResults: () => void,
   setQueryResults: React.Dispatch<React.SetStateAction<BusTrip[]>>,
+  getTripsDataHandler: (queryParams: Params) => void,
+  cities: string[]
 }
 
 export function getCurrentDate() {
@@ -21,17 +29,16 @@ export function getCurrentDate() {
   return currentDate
 }
 
-const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResults, setQueryResults }) => {
+const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResults, setQueryResults, getTripsDataHandler, cities }) => {
   const minDistance = 20;
   const router = useRouter()
 
-
+  const currentDate = new Date().toISOString().split('T')[0];
 
   const [from, setFrom] = useState(params.from || '')
   const [to, setTo] = useState(params.to || '')
   const [date, setDate] = useState(params.date || getCurrentDate())
   const [amount, setAmount] = useState(params.amount || '')
-  // const [time, setTime] = useState(params.time || '')
   const [price, setPrice] = useState<number[]>([Number(params.bottomPrice), Number(params.topPrice)] || [0, 100])
 
 
@@ -68,13 +75,13 @@ const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResult
 
 
   function filtrBtnHandler(e: FormEvent<HTMLFormElement>) {
+
     e.preventDefault()
     let params = {
       from: from,
       to: to,
       date: date,
       amount: amount,
-      // time: time,
       bottomPrice: String(price[0]),
       topPrice: String(price[1])
     }
@@ -82,46 +89,67 @@ const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResult
     const queryString = new URLSearchParams(Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value.trim() !== '')
     ))
-    setQueryResults([])
+    // setQueryResults([])
+    // getTripsDataHandler(params)
     router.push(`/SearchResults?${queryString}`)
   }
 
   useEffect(() => {
-    setFrom(params.from || '');
-    setTo(params.to || '');
-    setDate(params.date || getCurrentDate());
-    setAmount(params.amount || '');
-    // setTime(params.time || '');
-    setPrice(params.bottomPrice && params.topPrice ? [Number(params.bottomPrice), Number(params.topPrice)] : [0, 100]);
+    setFrom(params.from || '')
+    setTo(params.to || '')
+    setDate(params.date || getCurrentDate())
+    setAmount(params.amount || '')
+    setPrice(params.bottomPrice && params.topPrice ? [Number(params.bottomPrice), Number(params.topPrice)] : [0, 100])
   }, [params]);
   return (
     <Paper className={'ml-5 mt-5 mr-5'} elevation={3}>
-      {/* <form className={`flex flex-col items-cented ml-5 mt-5 mr-5 shadow ${styles.filter}`} onSubmit={filtrBtnHandler}> */}
-      <form className={`flex flex-col items-cented p-[10%] pl-[20%]`} onSubmit={filtrBtnHandler}> 
-        {/* <p className={'mb-5'}><b >Фильтр</b></p> */}
 
-        <TextField
-          id="fromField"
-          name='from'
-          type='text'
-          size='small'
-          label="Откуда"
-          variant="standard"
-          className='w-48 mt-2 mb-2'
+      <form className={`flex flex-col items-cented p-[10%] pl-[20%]`} onSubmit={filtrBtnHandler}>
+        <Autocomplete
+          disablePortal
           value={from}
-          onChange={(e) => setFrom(e.target.value)}
+          id="combo-box-demo"
+          options={cities}
+          sx={{ width: 300 }}
+          onChange={(event: any, newValue: string | null) => {
+            setFrom(newValue || '')
+          }}
+          renderInput={(params) => <TextField
+            {...params}
+            required
+            id="fromField"
+            name='from'
+            type='text'
+            size='small'
+            label="Откуда"
+            variant="standard"
+            className='w-48 mt-2 mb-2'
+            onChange={(e) => setFrom(e.target.value)}
+          />}
         />
-        <TextField
-          id="toField"
-          name='to'
-          type='text'
-          size='small'
-          label="Куда"
-          variant="standard"
-          className='w-48 mt-2 mb-2'
+         <Autocomplete
+          disablePortal
           value={to}
-          onChange={(e) => setTo(e.target.value)}
+          id="combo-box-demo"
+          options={cities}
+          sx={{ width: 300 }}
+          onChange={(event: any, newValue: string | null) => {
+            setTo(newValue || '')
+          }}
+          renderInput={(params) => <TextField
+            {...params}
+            required
+            id="toField"
+            name='to'
+            type='text'
+            size='small'
+            label="Куда"
+            variant="standard"
+            className='w-48 mt-2 mb-2'
+            onChange={(e) => setTo(e.target.value)}
+          />}
         />
+        
         <TextField
           id="dateField"
           name='date'
@@ -132,6 +160,7 @@ const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResult
           className='w-48 mt-2 mb-2'
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          inputProps={{ min: currentDate }}
         />
         <TextField
           id="amountField"
@@ -145,20 +174,7 @@ const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResult
           onChange={(e) => setAmount(e.target.value)}
           inputProps={{ min: 1, max: 50 }}
         />
-        {/* <TextField
-        id="timeField"
-        name='time'
-        size='small'
-        label="Время"
-        variant="standard"
-        className='w-48 mt-2 mb-2'
-        value={time}
-        onChange={(e) => setTime(e.target.value)} /> */}
-        {/* <TextField id="fromField" name='from' size='small' label="Откуда" variant="standard" className='w-48 mt-2 mb-2' value={params.from ?? ''} onChange={setNewQueryParam} />
-      <TextField id="toField" name='to' size='small' label="Куда" variant="standard" className='w-48 mt-2 mb-2' value={params.to ?? ''} onChange={setNewQueryParam} />
-      <TextField id="dateField" name='date' size='small' label="Дата" variant="standard" className='w-48 mt-2 mb-2' value={params.date ?? ''} onChange={setNewQueryParam} />
-      <TextField id="amountField" name='amount' size='small' label="Кол-во человек" variant="standard" className='w-48 mt-2 mb-2' value={params.amount ?? ''} onChange={setNewQueryParam} />
-      <TextField id="timeField" name='time' size='small' label="Время" variant="standard" className='w-48 mt-2 mb-2' value={params.time ?? ''} onChange={setNewQueryParam} /> */}
+    
         <Typography id="price" gutterBottom className='mt-4'>
           Цена
         </Typography>
@@ -203,8 +219,98 @@ const Filter: React.FC<Filter> = ({ params, setQueryParamsState, getSearchResult
         <Button type='submit' variant="contained" className={`w-48 mt-4 ${styles.findBnt}`}>Поиск</Button>
 
       </form >
+
     </Paper>
   )
 }
 
 export default Filter
+
+
+
+
+{/* <form
+onSubmit={(e) => filtrBtnHandler(e)}
+className='h-[100%] flex justify-between'>
+<div className='w-[20%] h-[100%] flex items-center ml-[2%]'>
+  <Autocomplete
+    value={from}
+    disablePortal
+    id="combo-box-demo"
+    options={cities}
+    sx={{ width: '90%' }}
+    onChange={(event: any, newValue: string | null) => {
+      setFrom(newValue || '')
+    }}
+    renderInput={(params) => <TextField
+      {...params}
+      className='SearchParamsInput'
+      required
+      id="from"
+      type='text'
+      label="Откуда?"
+      variant="outlined"
+      onChange={(e) => setFrom(e.target.value)}
+      onFocus={(e) => e.target.select()} />}
+  />
+
+</div>
+<div className='w-[20%] h-[100%] flex items-center '>
+  <Autocomplete
+    disablePortal
+    value={to}
+    id="combo-box-demo"
+    options={cities}
+    sx={{ width: '90%' }}
+    onChange={(event: any, newValue: string | null) => {
+      setTo(newValue || '')
+    }}
+    renderInput={(params) => <TextField
+      {...params}
+      className='SearchParamsInput'
+      required
+      id="to"
+      type='text'
+      label="Куда?"
+      variant="outlined"
+      onChange={(e) => setTo(e.target.value)}
+      onFocus={(e) => e.target.select()} />}
+  />
+
+</div>
+<div className='w-[20%] h-[100%] flex items-center '>
+  <TextField
+    sx={{ width: '90%' }}
+    id="date"
+    type='date'
+    label="Дата"
+    variant="outlined"
+    value={date}
+    onChange={(e) => setDate(e.target.value)}
+    onFocus={(e) => e.target.select()}
+    inputProps={{ min: currentDate }} />
+</div>
+<div className='w-[20%] h-[100%] flex items-center '>
+
+  <Select
+    sx={{ width: '90%' }}
+    id="amount"
+    value={amount}
+    onChange={(e) => setAmount(e.target.value)}
+    // autoWidth
+    fullWidth
+    type='text'
+  >
+    <MenuItem value={1}>1 паcсажир</MenuItem>
+    <MenuItem value={2}>2 паcсажира</MenuItem>
+    <MenuItem value={3}>3 пасcажира</MenuItem>
+    <MenuItem value={4}>4 пасcажира</MenuItem>
+    <MenuItem value={5}>5 пасcажира</MenuItem>
+  </Select>
+
+</div>
+
+<div className='flex items-center w-[15%] h-[100%] mr-[2%]'>
+  <Button variant="contained" type='submit' className={styles.findBnt}>Найти</Button>
+</div>
+</form> */}

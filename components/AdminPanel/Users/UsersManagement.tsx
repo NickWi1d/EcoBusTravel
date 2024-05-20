@@ -59,6 +59,7 @@ const UsersManagement = ({
       email: user.email,
       surname: user.surname,
       name: user.name,
+      phoneNumber: user.phoneNumber,
       passengers: user.passengers,
       trips: user.trips
     }
@@ -75,6 +76,7 @@ const UsersManagement = ({
       email: '',
       surname: '',
       name: '',
+      phoneNumber:'',
       passengers: [],
       trips: []
     })

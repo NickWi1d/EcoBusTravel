@@ -32,14 +32,14 @@ const TripInfo = ({tripData}:{tripData:BusTrip | undefined}) => {
                 <p>Отправление</p>
                 <div className={styles.departureInfoDetail}>
                     {tripData?.date && tripData?.date.split('-').reverse().join('.')} в {tripData?.startTime}<br></br>
-                    {tripData?.departure}пока что пусто
+                    {tripData?.departureAddress}
                 </div>
             </div>
             <div className={styles.destinationInfoBox}>
                 <p>Прибытие</p>
                 <div className={styles.destinationInfoDetail}>
                     {calculateArrivalDate(tripData?.date || '', tripData?.startTime || '', tripData?.travelTime || '')}<br></br>
-                    {tripData?.destination}пока что пусто
+                    {tripData?.destinationAddress}
                 </div>
             </div>
             <div className={styles.preliminaryCost}>

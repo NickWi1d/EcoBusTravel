@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Tab, Tabs, Box, TextField, Button, Alert, AlertTitle } from "@mui/material";
 import styles from '@/styles/Admin.module.scss'
 import UsersManagement from '@/components/AdminPanel/Users/UsersManagement';
-import { useAddNewTripMutation, useCancelTripMutation, useDeleteMutation, useLazyGetAllUsersQuery, useLazyGetTripsDataQuery, useLazyLoginQuery, useSignUpMutation, useUpDateTripInfoMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app'
-import { BusTrip, ExtendPassenger, IUser, Passenger, SeatData } from '@/types/types';
+import { useAddNewTripMutation, useCancelTripMutation, useDeleteMutation, useLazyGetAllUsersQuery, useLazyGetBusesQuery, useLazyGetTripsDataQuery, useLazyLoginQuery, useSignUpMutation, useUpDateBusInfoMutation, useUpDateTripInfoMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app'
+import { Bus, BusTrip, DeletedTrips, ExtendPassenger, IUser, Passenger, SeatData, typeOfBus } from '@/types/types';
 import TripsManagement from '@/components/AdminPanel/Trips/TripsManagement';
 import EditTripInfo from '@/components/AdminPanel/Trips/EditTripInfo';
 import EditUserInfo from '@/components/AdminPanel/Users/EditUserInfo';
@@ -17,9 +17,9 @@ interface TabPanelProps {
   value: number;
 }
 
-interface DeletedTrips {
-  orderId:string, tripId:string, amountOfTickets:number
-}
+
+
+
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -53,6 +53,7 @@ const Admin = () => {
   const [value, setValue] = useState(0)
   const [usersList, setUsersList] = useState<IUser[]>([])
   const [tripsList, setTripsList] = useState<BusTrip[] | []>([])
+  const [busesList, setBusesList] = useState<Bus[] | []>([])
   const [passengersList, setPassengersList] = useState<ExtendPassenger[] | []>([])
   const [areThereAnyPassengers, setAreThereAnyPassengers] = useState(false)
   const [isAddNewTrip, setIsAddNewTrip] = useState(false)
@@ -74,14 +75,15 @@ const Admin = () => {
     reservedSeats: 0,
     seats: Array.from({ length: 50 }, () => ({
       orderId:'',
+      available: true,
       user: {
         _id: '',
         username: '',
         email: '',
         surname: '',
-        name: ''
+        name: '',
+        phoneNumber:''
       },
-      available: true,
       owner: {
         id: '',
         surname: '',
@@ -94,7 +96,9 @@ const Admin = () => {
     })),
     startTime: '',
     destination: '',
-    departure: ''
+    departure: '',
+    destinationAddress:'',
+    departureAddress:''
   })
   const [selectedUser, setSelectedUser] = useState<IUser>({
     _id: '',
@@ -103,8 +107,15 @@ const Admin = () => {
     email: '',
     surname: '',
     name: '',
+    phoneNumber: '',
     passengers: [],
     trips: []
+  })
+  const [selectedBus, setSelectedBus] = useState<Bus>({
+    _id:'',
+    type:'L',
+    amountOfSeats:0,
+    plateNumber:''
   })
 
   const [getUsersData, { isLoading: isUsersDataLoading, isError: isGettingUsersDataError, data: UsersData, isSuccess: isGettingUsersDataSuccess, error: getingUsersDataError }] = useLazyGetAllUsersQuery()
@@ -114,6 +125,8 @@ const Admin = () => {
   const [addNewTrip, { isLoading: isAddNewTripLoading, isError: isSAddNewTripError, data: addNewTripResult, isSuccess: addNewTripSuccess, error: AddNewTripError }] = useAddNewTripMutation()
   const [updateUserData, { isSuccess: isUpdateUserDataSuccess, data: UpdateUserData, isError: isUpDateError, error: UpDateError }] = useUpDateUserInfoMutation()
   const [addNewUser, { isLoading: isAddNewUserLoading, isError: isAddNewUserError, data: AddNewUserData, isSuccess: isAddNewUserSuccess, error: AddNewUserError }] = useSignUpMutation()
+  const [getBuses, { isLoading: isGetBusesLoading, isError: isGetBusesError, data: BusesData, isSuccess: isGetBusesSuccess, error: GetBusesError }] = useLazyGetBusesQuery()
+  const [upDateBusInfo, { isSuccess: isUpDateBusInfoSuccess, data: upDateBusData, isError: isUpDateBusInfoError, error: UpDateBusInfoError }] = useUpDateBusInfoMutation()
   const [deleteUser, { data: deleteUserData, isSuccess: isDeletionUserSuccess }] = useDeleteMutation()
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -122,6 +135,7 @@ const Admin = () => {
   useEffect(() => {
     getUsersData({ type: 'GET_ALL_DATA' })
     getTripsData({})
+    getBuses({})
   }, [])
   useEffect(() => {
     if (isGettingUsersDataSuccess && UsersData && TripsDataSuccess && TripsData) {
@@ -134,6 +148,7 @@ const Admin = () => {
           email: user.email,
           surname: user.surname,
           name: user.name,
+          phoneNumber: user.phoneNumber,
           passengers: user.passengers,
           trips: [...user.trips.map(userTrip => {
             return {
@@ -155,7 +170,9 @@ const Admin = () => {
                     reservedSeats: tripData.reservedSeats,
                     startTime: tripData.startTime,
                     destination: tripData.destination,
-                    departure: tripData.departure
+                    departure: tripData.departure,
+                    destinationAddress: tripData.destinationAddress,
+                    departureAddress: tripData.departureAddress
                   }
                 }
               })[0]
@@ -170,7 +187,8 @@ const Admin = () => {
             username: user.username,
             email: user.email,
             surname: user.surname,
-            name: user.name
+            name: user.name,
+            phoneNumber:user.phoneNumber
           },
           passengers: user.passengers
         }] : []
@@ -184,6 +202,11 @@ const Admin = () => {
     }
   }, [TripsDataSuccess, TripsData])
   useEffect(() => {
+    if (isGetBusesSuccess && BusesData) {
+      setBusesList(BusesData.buses)
+    }
+  }, [isGetBusesSuccess, BusesData])
+  useEffect(() => {
 
     if (isCancelTripSuccess) {
       setTripsList(prev => prev.filter(trip => trip._id !== selectedTrip._id))
@@ -195,62 +218,70 @@ const Admin = () => {
     if (addNewTripSuccess && addNewTripResult) {
 
       setTripsList(prev => [...prev, { ...selectedTrip, _id: addNewTripResult.addNewTrip.insertedId }])
+      getTripsData({})
+      getUsersData({ type: 'GET_ALL_DATA' })
     }
   }, [addNewTripSuccess, addNewTripResult])
-  useEffect(() => {
-    if (isUpDateTripInfoSuccess && upDateData) {
-      setTripsList(prev => {
-        let newTripList = prev.map(trip => {
-          if (trip._id === selectedTrip._id) {
-            return {
-              _id: selectedTrip._id,
-              date: selectedTrip.date,
-              driver: selectedTrip.driver,
-              finishTime: selectedTrip.finishTime,
-              from: selectedTrip.from,
-              price: selectedTrip.price,
-              to: selectedTrip.to,
-              type: selectedTrip.type,
-              availableSeats: selectedTrip.availableSeats,
-              travelTime: selectedTrip.travelTime,
-              reservedSeats: selectedTrip.reservedSeats,
-              seats: selectedTrip.seats,
-              startTime: selectedTrip.startTime,
-              destination: selectedTrip.destination,
-              departure: selectedTrip.departure
-            }
-          }
-          return trip
-        })
-        return newTripList
-      }
-      )
+  // useEffect(() => {
+  //   if (isUpDateTripInfoSuccess && upDateData) {
+  //     // setTripsList(prev => {
+  //     //   let newTripList = prev.map(trip => {
+  //     //     if (trip._id === selectedTrip._id) {
+  //     //       return {
+  //     //         _id: selectedTrip._id,
+  //     //         date: selectedTrip.date,
+  //     //         driver: selectedTrip.driver,
+  //     //         finishTime: selectedTrip.finishTime,
+  //     //         from: selectedTrip.from,
+  //     //         price: selectedTrip.price,
+  //     //         to: selectedTrip.to,
+  //     //         type: selectedTrip.type,
+  //     //         availableSeats: selectedTrip.availableSeats,
+  //     //         travelTime: selectedTrip.travelTime,
+  //     //         reservedSeats: selectedTrip.reservedSeats,
+  //     //         seats: selectedTrip.seats,
+  //     //         startTime: selectedTrip.startTime,
+  //     //         destination: selectedTrip.destination,
+  //     //         departure: selectedTrip.departure,
+  //     //         destinationAddress:selectedTrip.destinationAddress,
+  //     //         departureAddress:selectedTrip.departureAddress
+  //     //       }
+  //     //     }
+  //     //     return trip
+  //     //   })
+  //     //   return newTripList
+  //     // }
+  //     // )
+  //     getTripsData({})
+  //     getUsersData({ type: 'GET_ALL_DATA' })
 
-
-    }
-  }, [isUpDateTripInfoSuccess, upDateData])
+  //   }
+  // }, [isUpDateTripInfoSuccess, upDateData])
   useEffect(() => {
-    if (isUpdateUserDataSuccess) {
-      setUsersList(prev => {
-        let newList = prev.map(user => {
-          if (user._id === selectedUser._id) {
-            return {
-              _id: selectedUser._id,
-              username: selectedUser.username,
-              password: selectedUser.password,
-              email: selectedUser.email,
-              surname: selectedUser.surname,
-              name: selectedUser.name,
-              passengers: selectedUser.passengers,
-              trips: selectedUser.trips
-            }
-          }
-          return user
-        })
-        return newList
-      })
+    if (isUpdateUserDataSuccess || isUpDateTripInfoSuccess || isUpDateBusInfoSuccess) {
+      // setUsersList(prev => {
+      //   let newList = prev.map(user => {
+      //     if (user._id === selectedUser._id) {
+      //       return {
+      //         _id: selectedUser._id,
+      //         username: selectedUser.username,
+      //         password: selectedUser.password,
+      //         email: selectedUser.email,
+      //         surname: selectedUser.surname,
+      //         name: selectedUser.name,
+      //         passengers: selectedUser.passengers,
+      //         trips: selectedUser.trips
+      //       }
+      //     }
+      //     return user
+      //   })
+      //   return newList
+      // })
+      getTripsData({})
+      getUsersData({ type: 'GET_ALL_DATA' })
+      getBuses({})
     }
-  }, [isUpdateUserDataSuccess, UpdateUserData])
+  }, [isUpdateUserDataSuccess, UpdateUserData, isUpDateTripInfoSuccess, upDateData, isUpDateBusInfoSuccess, upDateBusData])
   useEffect(() => {
     if (isAddNewUserSuccess && AddNewUserData) {
       setUsersList(prev => [...prev, { ...selectedUser, _id: AddNewUserData.addUser.insertedId }])
@@ -268,6 +299,8 @@ const Admin = () => {
       })
     }
   }, [isDeletionUserSuccess, deleteUserData])
+
+
 
   function upDateTripInfoHandler() {
     let updatedSeats = selectedTrip.seats.map((seat, index) => {
@@ -313,10 +346,9 @@ const Admin = () => {
   function upDateUserInfoHandler(id: string, tripsId: Array<string>) {
     setIsAddNewUser(false)
     updateUserData({ uid: id, type: 'FULL_UPDATE_USER_INFO', user: selectedUser })
-    tripsId.map(id => {
-      let seats = selectedUser.trips.filter(trip => trip.tripId === id)[0].seats.map(seat => seat.id)
-      let seatsTripData = tripsList.filter(trip => trip._id === id)[0].seats
-      upDateTripInfo({ id, type: 'UPDATE_SEAT_TRIP_INFO', user: selectedUser, seats, seatsTripData })
+    selectedUser.trips.map(trip => {
+      let seatsTripData = tripsList.filter(BusTrip => BusTrip._id === trip.tripId)[0].seats
+      upDateTripInfo({ id: trip.tripId, type: 'UPDATE_SEAT_TRIP_INFO', user: selectedUser, seats: trip.seats.map(seat => seat.seatNumber), seatsTripData })
     })
     deletedTrips.map(deletedTrip => {
       let TripSeats = tripsList.filter(trip => trip._id === deletedTrip.tripId).map(trip => trip.seats)[0]
@@ -328,12 +360,17 @@ const Admin = () => {
   }
   function addNewUserHandler() {
     setIsAddNewUser(true)
-    addNewUser({ username: selectedUser.username, password: selectedUser.password, email: selectedUser.email, surname: selectedUser.email, name: selectedUser.name, passengers: selectedUser.passengers, trips: selectedUser.trips })
+    addNewUser({ username: selectedUser.username, password: selectedUser.password, email: selectedUser.email, surname: selectedUser.email, name: selectedUser.name, passengers: selectedUser.passengers, trips: selectedUser.trips, phoneNumber:selectedUser.phoneNumber })
   }
   function deleteUserHandler(uid: string) {
     deleteUser(uid)
   }
 
+
+
+  function upDateBusInfoHandler(uid:string, typeOfBus:typeOfBus) {
+    upDateBusInfo({uid, typeOfBus})
+  }
   return (
     <div>
       <Box className={styles.tabBox}
@@ -349,7 +386,7 @@ const Admin = () => {
         >
           <Tab label="Пользователи" {...a11yProps(0)} />
           <Tab label="Рейсы" {...a11yProps(1)} />
-          <Tab label="Автобусы" {...a11yProps(2)} />
+          <Tab label="Автопарк" {...a11yProps(2)} />
         </Tabs>
         <TabPanel value={value} index={0} >
           {isShowEditUserInfo ?
@@ -397,7 +434,12 @@ const Admin = () => {
           }
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <BusesManagement></BusesManagement>
+          <BusesManagement
+            busesList={busesList}
+            selectedBus={selectedBus}
+            setSelectedBus={setSelectedBus}
+            upDateBusInfoHandler={upDateBusInfoHandler}
+          ></BusesManagement>
         </TabPanel>
       </Box>
     </div>

@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import store from '@/store'
 import Header from '@/components/Navigation/Header';
 import Head from 'next/head';
+import { closeDatabaseConnection, connectToDatabase } from '@/lib/mongodb';
+import { useEffect } from 'react';
 
 
 
@@ -12,6 +14,8 @@ export default function App({ Component, pageProps }: AppProps) {
     <link rel="icon" href="/favicon.ico" />
     {/* Другие мета-теги и настройки заголовка... */}
   </Head>
+  
+
   
   return (
     <Provider store={store}>

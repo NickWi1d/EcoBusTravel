@@ -3,26 +3,58 @@ import styles from '@/styles/CreateOrder.module.scss'
 import { TextField, InputLabel, FormControl } from '@mui/material'
 import { Customer } from '@/types/types'
 
-const CustomerCard = ({setCustomer}:{setCustomer:React.Dispatch<React.SetStateAction<Customer>>}) => {
+const CustomerCard = ({
+    setCustomer, 
+    user,
+    setFillCustomerData,
+    fillCustomerData,
+    customer
+}:{
+    setCustomer:React.Dispatch<React.SetStateAction<Customer>>, 
+    user:{ uid: string, username: string, name: string, surname: string, email: string, phoneNumber:string },
+    setFillCustomerData:React.Dispatch<React.SetStateAction<boolean>>,
+    fillCustomerData:boolean,
+    customer:Customer
+}) => {
+
     const [surname, setSurname] = useState('')
     const [name, setName] = useState('')
-    const [phoneNUmber, setPhoneNUmber] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('')
     const [email, setEmail] = useState('')
 
     useEffect(() => {
-        setCustomer({
-            surname:surname,
-            name: name,
-            phoneNumber:phoneNUmber,
-            email:email
-        })
-    }, [surname, name, phoneNUmber, email])
+        // if(surname.length !== 0 && name.length !== 0 && phoneNUmber.length !== 0 && email.length !== 0){
+            setCustomer({
+                surname:surname,
+                name: name,
+                phoneNumber:phoneNumber,
+                email:email
+            })
+        // }
+    }, [surname, name, phoneNumber, email])
+
+    useEffect(() => {
+        if(fillCustomerData){
+            setSurname(user.surname)
+            setName(user.name)
+            setEmail(user.email)
+            setPhoneNumber(user.phoneNumber)
+            setFillCustomerData(false)
+        }
+    }, [fillCustomerData])
+    
+    useEffect(()=>{
+        setSurname(customer.surname)
+        setName(customer.name)
+        setPhoneNumber(customer.phoneNumber)
+        setEmail(customer.email)
+    }, [])
     
     return (
         <div className={styles.customerCard}>
             <div className={styles.customerFIO}>
                 <TextField
-                    // required
+                    required
                     id="surname"
                     type='text'
                     label="Фамилия"
@@ -32,7 +64,7 @@ const CustomerCard = ({setCustomer}:{setCustomer:React.Dispatch<React.SetStateAc
                     onFocus={(e) => e.target.select()}
                 />
                 <TextField
-                    // required
+                    required
                     id="name"
                     type='text'
                     label="Имя"
@@ -44,18 +76,18 @@ const CustomerCard = ({setCustomer}:{setCustomer:React.Dispatch<React.SetStateAc
             </div>
             <div className={styles.customerPersonalInfo}>
                 <TextField
-                    // required
+                    required
                     id="birthDate"
                     type='phone'
                     label="Телефон"
                     variant="outlined"
-                    value={phoneNUmber}
-                    onChange={(e) => setPhoneNUmber(e.target.value)}
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                     onFocus={(e) => e.target.select()}
                     helperText="Сообщим об изменениях рейса"
                 />
                 <TextField
-                    // required
+                    required
                     id="birthDate"
                     type='email'
                     label="Эл. почта"

@@ -4,18 +4,18 @@ import { useRouter } from 'next/navigation';
 import { logOut, logIn, dropUser } from '@/store/reducers/authSlice'
 import { Tab, Tabs, Box, TextField, Button, Alert, AlertTitle } from "@mui/material";
 import styles from '@/styles/PersonalAccount.module.scss'
-import AlertComponent from '@/components/Alert'
-import { useDeleteMutation, useUpDateUserInfoMutation, useLazyLoginQuery, useLazyGetTripsDataQuery } from "@/store/reducers/api/app";
+import { useDeleteMutation, useUpDateUserInfoMutation, useLazyLoginQuery, useLazyGetTripsDataQuery, useUpDateTripInfoMutation, useSendEmailMutation } from "@/store/reducers/api/app";
 import Modal from "@/components/ModalWindows/Modal";
 import ChangePassword from "@/components/ModalWindows/ChangePassword";
 import ConfirmDeletion from '@/components/ModalWindows/ConfirmDeletion'
 import Header from "@/components/Navigation/Header";
 import Settings from "@/components/PersonalAccount/Settings";
 import Info from "@/components/PersonalAccount/Info";
-import { BusTrip, CustomAlertType, Passenger, UserTrip } from "@/types/types";
+import { BusTrip, CustomAlertType, CustomUserTrip, DeletedTrips, Passenger, UserTrip } from "@/types/types";
 import { Head } from "next/document";
 import { clearSeatsInfo } from "@/components/CreateOrder/ChoosePlaces";
 import Passengers from "@/components/PersonalAccount/Passengers";
+import Trips from "@/components/PersonalAccount/Trips";
 
 
 
@@ -57,7 +57,7 @@ function a11yProps(index: number) {
 const PersonalAccount = () => {
   const UpdateInfoType = 'UPDATE_INFO'
   const UpdatePasswordType = 'UPDATE_PASSWORD'
-  let [uid, setUid] = useState('')
+  const [uid, setUid] = useState('')
   const [value, setValue] = useState(0)
   const [username, setUsername] = useState('')
   const [surname, setSurname] = useState('')
@@ -66,6 +66,7 @@ const PersonalAccount = () => {
   const [newPassword, setNewPassword] = useState('')
   const [newPasswordRepeat, setNewPasswordRepeat] = useState('')
   const [email, setEmail] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
 
   const [showModal, setShowModal] = useState(false)
   const [showModalConfirmDelition, setShowModalConfirmDelition] = useState(false)
@@ -77,10 +78,42 @@ const PersonalAccount = () => {
   const [deleteUser, { isLoading, data: deleteUserData, isSuccess: isDeletionSuccess }] = useDeleteMutation()
   const [updateUserData, { isSuccess: isUpdateSuccess, data: UpdateUserData, isError: isUpDateError, error: UpDateError }] = useUpDateUserInfoMutation()
   const [getTripsData, { isLoading: isTripsDataLoading, isError: isTripsDataError, data: TripsData, isSuccess: TripsDataSuccess, error: TripsDataError }] = useLazyGetTripsDataQuery()
+  const [upDateTripInfo, { isSuccess: isUpDateTripInfoSuccess, data: upDateData, isError: isUpDateTripInfoError, error: UpDateTripInfoError }] = useUpDateTripInfoMutation()
+  const [sendEmail, { isLoading: isSendEmailLoading, isError: isSendEmailError, data: SendEmailData, isSuccess: isSendEmailSuccess, error: SendEmailError }] = useSendEmailMutation()
 
   const [userPassengers, setUserPassengers] = useState<Passenger[] | []>([])
   const [isEditPassengerInfo, setIsEditPassengerInfo] = useState(false)
   const [userTrips, setUserTrips] = useState<UserTrip[] | []>([])
+  const [AllTrips, setAllTrips] = useState<BusTrip[] | []>([])
+
+
+
+  const [deletedTrip, setDeletedTrip] = useState<DeletedTrips>({
+    orderId: '',
+    tripId: '',
+    amountOfTickets: 0
+  })
+
+  const [selectedTrip, setSelectedTrip] = useState<CustomUserTrip>({
+    orderId: '',
+    tripId: '',
+    seats: [],
+    date: '',
+    from: '',
+    to: '',
+    driver: '',
+    finishTime: '',
+    price: 0,
+    type: 'L',
+    availableSeats: 0,
+    travelTime: '',
+    reservedSeats: 0,
+    startTime: '',
+    destination: '',
+    departure: '',
+    destinationAddress: '',
+    departureAddress: '',
+  })
 
   const dispatch = useDispatch()
   const router = useRouter()
@@ -88,6 +121,9 @@ const PersonalAccount = () => {
   useEffect(() => {
     console.log('ок', userPassengers);
   }, [userPassengers])
+  useEffect(() => {
+    console.log('Не ок', userTrips);
+  }, [userTrips])
 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -106,7 +142,7 @@ const PersonalAccount = () => {
 
   async function updateUserInfoHandler(e: MouseEvent<HTMLFormElement>) {
     e.preventDefault()
-    updateUserData({ uid, type: UpdateInfoType, username, surname, email, name })
+    updateUserData({ uid, type: UpdateInfoType, username, surname, email, name, phoneNumber })
   }
 
   async function UpdateUserPasswordHandler() {
@@ -139,6 +175,7 @@ const PersonalAccount = () => {
       setSurname(UserData.user.surname)
       setName(UserData.user.name)
       setUserPassengers(UserData.user.passengers)
+      setPhoneNumber(UserData.user.phoneNumber)
       // setUserTrips(UserData.user.trips)
     }
   }, [isLogInSuccess, UserData])
@@ -147,7 +184,7 @@ const PersonalAccount = () => {
     if (isLogInSuccess && UserData && TripsDataSuccess && TripsData) {
       setUserTrips([...UserData.user.trips.map(trip => {
         return {
-          orderId:trip.orderId,
+          orderId: trip.orderId,
           tripId: trip.tripId,
           seats: trip.seats,
           tripData: TripsData.busTrips.filter(busTrip => {
@@ -165,7 +202,9 @@ const PersonalAccount = () => {
                 reservedSeats: busTrip.reservedSeats,
                 startTime: busTrip.startTime,
                 destination: busTrip.destination,
-                departure: busTrip.departure
+                departure: busTrip.departure,
+                destinationAddress: busTrip.destinationAddress,
+                departureAddress: busTrip.departureAddress,
               }
             }
           })[0]
@@ -181,7 +220,7 @@ const PersonalAccount = () => {
       localStorage.setItem('token', 'null')
       localStorage.setItem('user', 'null')
       localStorage.setItem('uid', 'null')
-      uid = ''
+      setUid('')
       dispatch(logOut({}))
       router.push('/')
     }
@@ -199,6 +238,17 @@ const PersonalAccount = () => {
     }
   }, [UpdateUserData, isUpdateSuccess])
 
+
+  useEffect(() => {
+    if(UpdateUserData && isUpdateSuccess && upDateData && isUpDateTripInfoSuccess){
+      setUserTrips(prev => {
+        let newUsersTrips = prev.filter(trip => trip.orderId !== deletedTrip.orderId)
+        return newUsersTrips
+      })
+    }
+  }, [UpdateUserData, isUpdateSuccess, upDateData, isUpDateTripInfoSuccess])
+  
+
   useEffect(() => {
     if (isUpDateError && UpDateError) {
 
@@ -214,11 +264,11 @@ const PersonalAccount = () => {
 
     }
   }, [isUpDateError, UpDateError])
-  // useEffect(() => {
-  //   if (TripsDataSuccess && TripsData) {
-  //     setUserTrips(TripsData.busTrips)
-  //   }
-  // }, [TripsDataSuccess, TripsData])
+  useEffect(() => {
+    if (TripsDataSuccess && TripsData) {
+      setAllTrips(TripsData.busTrips)
+    }
+  }, [TripsDataSuccess, TripsData])
 
   useEffect(() => {
     clearSeatsInfo()
@@ -230,13 +280,40 @@ const PersonalAccount = () => {
     if (token && currentUser) {
       getUserData({ username: currentUser, type: 'GET_DATA' })
       getTripsData({})
-      // getTripsData({})
     }
 
     setAlertType('success')
     setAlertText('Login is successful')
   }, [isEditPassengerInfo])
 
+  function deleteTripHandler() {
+    updateUserData({ uid, type: 'DELETE_USER_TRIP', orderId: deletedTrip.orderId, userTrips: userTrips })
+    upDateTripInfo({
+      id: deletedTrip.tripId, 
+      type:'DELETE_ORDER',
+      seats:AllTrips.filter(trip => {
+        if (trip._id === selectedTrip.tripId) {
+          return trip.seats
+        }
+      })[0].seats, 
+      orderId:deletedTrip.orderId, 
+      availableSeats:AllTrips.filter(trip => {
+        if (trip._id === selectedTrip.tripId) {
+          return trip.availableSeats
+        }
+      })[0].availableSeats, 
+      reservedSeats:AllTrips.filter(trip => {
+        if (trip._id === selectedTrip.tripId) {
+          return trip.reservedSeats
+        }
+      })[0].reservedSeats, 
+      amountOfTickets:deletedTrip.amountOfTickets
+    })
+  }
+
+  function PrintTheTicket() {
+    sendEmail({})
+  }
 
   return (
     <>
@@ -293,11 +370,13 @@ const PersonalAccount = () => {
             setName={setName}
             setSurname={setSurname}
             setEmail={setEmail}
+            setPhoneNumber={setPhoneNumber}
 
             email={email}
             surname={surname}
             name={name}
             username={username}
+            phoneNumber={phoneNumber}
 
             showAlert={showAlert}
             setShowAlert={setShowAlert}
@@ -308,15 +387,24 @@ const PersonalAccount = () => {
           />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          {userTrips.length === 0 && 'У вас нет сохраненных поездок'}
-          {userTrips.map(trip => <div className="border border-gray-300 rounded-md p-4 mb-4">
-            <p className="text-lg font-semibold">Id: {trip.tripId}</p>
-            <p className="text-gray-700">Откуда: {trip.tripData.from}</p>
-            <p className="text-gray-700">Куда: {trip.tripData.to}</p>
-          </div>)}
+          <Trips
+            userTrips={userTrips}
+            setUserTrips={setUserTrips}
+            setSelectedTrip={setSelectedTrip}
+            selectedTrip={selectedTrip}
+            deleteTripHandler={deleteTripHandler}
+            setDeletedTrip={setDeletedTrip}
+            PrintTheTicket={PrintTheTicket}
+          ></Trips>
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <Passengers userPassengers={userPassengers} uid={uid} isEditPassengerInfo={isEditPassengerInfo} setIsEditPassengerInfo={setIsEditPassengerInfo} setUserPassengers={setUserPassengers}></Passengers>
+          <Passengers
+            userPassengers={userPassengers}
+            uid={uid}
+            isEditPassengerInfo={isEditPassengerInfo}
+            setIsEditPassengerInfo={setIsEditPassengerInfo}
+            setUserPassengers={setUserPassengers}
+          ></Passengers>
         </TabPanel>
         <TabPanel value={value} index={3}>
           <Settings

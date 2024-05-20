@@ -38,14 +38,16 @@ const ChangePlaceInfo = ({ setIsShowSeatWindow, clickedPalce, selectedSeat, setS
                 if (index === clickedPalce) {
                     if(isSeatAvaliable && seat.owner){
                         return {
+                            orderId: seat.orderId,
+                            available: isSeatAvaliable,
                             user:{
                                 _id: '',
                                 username: '',
                                 email: '',
                                 surname:'',        
-                                name: ''
+                                name: '',
+                                phoneNumber: ''
                             },
-                            available: isSeatAvaliable,
                             owner: {
                                 id: seat.owner?.id,
                                 surname: passengerSurname,
@@ -58,6 +60,7 @@ const ChangePlaceInfo = ({ setIsShowSeatWindow, clickedPalce, selectedSeat, setS
                         }
                     }else{
                         return {
+                            orderId: '',
                             user:null,
                             available: isSeatAvaliable,
                             owner: null
