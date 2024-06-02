@@ -38,7 +38,7 @@ const PassengerDataCard = ({
         // if(surname.length !== 0 && name.length !== 0 && patronymic.length !== 0 && documentNumber.length !== 0 && birthDate.length !== 0 && gender.length !== 0){
             setCurrentPassengers(prev => {
                 console.log(userPassengers);
-                prev[TicketNumber - 1] = { id:userPassengers[TicketNumber - 1].id || '', surname, name, patronymic, documentNumber, birthDate, gender }
+                prev[TicketNumber - 1] = { id:userPassengers.length !== 0 ? userPassengers[TicketNumber - 1].id : '', surname, name, patronymic, documentNumber, birthDate, gender }
                 return prev
             })
         // }

@@ -42,7 +42,6 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     onFocus={(e) => e.target.select()}
                 />
                 <TextField
-                    required
                     id="patronymic"
                     type='text'
                     label="Отчество"

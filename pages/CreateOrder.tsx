@@ -153,7 +153,7 @@ const CreateOrder: FC = () => {
         setIsFullDataFilled(true)
         for (let index = 0; index < currentPassengers.length; index++) {
             let currentPassenger = currentPassengers[index]
-            if (currentPassenger.id.length === 0 || currentPassenger.name.length === 0 || currentPassenger.surname.length === 0 || currentPassenger.gender.length === 0 || currentPassenger.documentNumber.length === 0 || currentPassenger.birthDate.length === 0) {
+            if (currentPassenger.name.length === 0 || currentPassenger.surname.length === 0 || currentPassenger.gender.length === 0 || currentPassenger.documentNumber.length === 0 || currentPassenger.birthDate.length === 0) {
                 setIsFullDataFilled(false)
                 break
             }
