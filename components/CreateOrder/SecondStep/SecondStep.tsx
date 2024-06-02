@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import styles from '@/styles/CreateOrder.module.scss'
 import { BusTrip, CustomAlertType, Customer, Passenger } from '@/types/types';
-import PassengerDataCard from './PassengerDataCard';
-import TripInfo from './TripInfo';
-import CustomerCard from './CustomerCard';
-import AlertComponent from '../ModalWindows/Alert';
+import PassengerDataCard from '../SecondStep/PassengerDataCard';
+import TripInfo from '../TripInfo';
+import CustomerCard from '../SecondStep/CustomerCard';
+import AlertComponent from '../../ModalWindows/Alert';
 
 const SecondStep: React.FC<{ 
     tripData: BusTrip | undefined, 

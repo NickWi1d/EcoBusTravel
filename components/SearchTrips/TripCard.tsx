@@ -28,13 +28,21 @@ const TripCard: FC<TripInfo> = ({ result, setAlertType, setAlertText, setShowAle
   };
 
   async function advanceReservation(result: object) {
-    console.log('result', result)
-    const queryString = new URLSearchParams(Object.fromEntries(
-      Object.entries(result).map(([key, value]) => {
-        return key === 'seats' ? [key, JSON.stringify(value)] : [key, value];
-      })
-    ))
-    router.push(`/CreateOrder?${queryString}`)
+    const currentToken = localStorage.getItem('token')
+    const currentUser = localStorage.getItem('user')
+    if(currentToken === 'true' && currentUser !== 'admin'){
+      console.log('result', result)
+      const queryString = new URLSearchParams(Object.fromEntries(
+        Object.entries(result).map(([key, value]) => {
+          return key === 'seats' ? [key, JSON.stringify(value)] : [key, value];
+        })
+      ))
+      router.push(`/CreateOrder?${queryString}`)
+    }else if(currentToken === 'false'){
+      router.push('/Authorization?isHaveAnAccount=true')
+    }else{
+      router.push('/Authorization?isHaveAnAccount=false')
+    }
   }
 
   return (

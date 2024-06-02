@@ -7,6 +7,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
 import { DataGrid, GridColDef, GridEventListener, useGridApiRef, gridClasses, MuiEvent, GridRowParams, GridCallbackDetails } from '@mui/x-data-grid';
 
+interface BusTripExtended extends BusTrip {
+    warning: boolean;
+  }
+
 const columns: GridColDef[] = [
     {
         field: '_id',
@@ -19,23 +23,32 @@ const columns: GridColDef[] = [
         field: 'date',
         headerName: 'Дата',
         type: 'date',
-        width: 350,
+        width: 300,
         sortingOrder: ['desc', 'asc', null]
     },
     {
         field: 'from',
         headerName: 'Откуда',
         type: 'string',
-        width: 300,
+        width: 250,
         sortingOrder: ['desc', 'asc', null]
     },
     {
         field: 'to',
         headerName: 'Туда',
         type: 'string',
-        width: 300,
+        width: 250,
         sortingOrder: ['desc', 'asc', null]
     },
+    {
+        field: 'warning',
+        headerName: 'Успешно',
+        type: 'boolean',
+        width: 100,
+        sortingOrder: ['desc', 'asc', null],
+        align: 'left',
+        headerAlign: 'left'
+    }
 ];
 
 
@@ -49,7 +62,7 @@ const TripsManagement = (
     }: {
         tripsList: BusTrip[],
         setIsShowEditTripInfo: React.Dispatch<React.SetStateAction<boolean>>,
-        setSelectedTrip: React.Dispatch<React.SetStateAction<BusTrip>>,
+        setSelectedTrip: React.Dispatch<React.SetStateAction<BusTripExtended>>,
         setIsAddNewTrip: React.Dispatch<React.SetStateAction<boolean>>
     }) => {
     const apiRef = useGridApiRef();
@@ -69,7 +82,7 @@ const TripsManagement = (
             driver: trip.driver,
             finishTime: trip.finishTime,
             price: trip.price,
-            type: trip.type,
+            busNumber: trip.busNumber,
             availableSeats: trip.availableSeats,
             travelTime: trip.travelTime,
             reservedSeats: trip.reservedSeats,
@@ -78,7 +91,8 @@ const TripsManagement = (
             destination: trip.destination,
             departure: trip.departure,
             destinationAddress: trip.destinationAddress,
-            departureAddress: trip.departureAddress
+            departureAddress: trip.departureAddress,
+            warning: trip.busNumber === null ? false : true
         }
     })
 
@@ -97,7 +111,7 @@ const TripsManagement = (
             from: '',
             price: 0,
             to: '',
-            type: 'L',
+            busNumber: '',
             availableSeats: 50,
             travelTime: '',
             reservedSeats: 0,
@@ -111,7 +125,8 @@ const TripsManagement = (
             destination: '',
             departure: '',
             destinationAddress: '',
-            departureAddress: ''
+            departureAddress: '',
+            warning:true
         })
     }
 

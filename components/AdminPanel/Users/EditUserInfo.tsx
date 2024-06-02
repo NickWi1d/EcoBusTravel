@@ -1,5 +1,5 @@
 import { CustomUserTrip, IUser, Passenger, UserTrip, UserTripPassenger, typeOfBus } from '@/types/types'
-import { TextField, Button, Tabs, Box, Tab, Typography, List, ListSubheader, ListItemButton, ListItemIcon, ListItemText, Collapse, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, FormLabel, RadioGroup, FormControlLabel, Radio, Paper, IconButton, Autocomplete, InputBase } from '@mui/material'
+import { TextField, Button, Tabs, Box, Tab, Typography, List, ListSubheader, ListItemButton, ListItemIcon, ListItemText, Collapse, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, FormLabel, RadioGroup, FormControlLabel, Radio, Paper, IconButton, Autocomplete, InputBase, Card, CardContent } from '@mui/material'
 import { DataGrid, GridColDef, GridEventListener, useGridApiRef, gridClasses, MuiEvent, GridRowParams, GridCallbackDetails } from '@mui/x-data-grid';
 import React, { FormEvent, useEffect, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
@@ -120,7 +120,7 @@ const EditUserInfo = ({
         driver: '',
         finishTime: '',
         price: 0,
-        type: 'L',
+        busNumber: '',
         availableSeats: 0,
         travelTime: '',
         reservedSeats: 0,
@@ -175,7 +175,7 @@ const EditUserInfo = ({
             driver: trip.tripData.driver,
             finishTime: trip.tripData.finishTime,
             price: trip.tripData.price,
-            type: trip.tripData.type,
+            busNumber: trip.tripData.busNumber,
             availableSeats: trip.tripData.availableSeats,
             travelTime: trip.tripData.travelTime,
             reservedSeats: trip.tripData.reservedSeats,
@@ -241,7 +241,7 @@ const EditUserInfo = ({
                         console.log(selectedUserPassenger.id)
                         if (seat.id === selectedUserPassenger.id) {
                             console.log('yes, bitch', selectedUserPassenger);
-                            
+
                             return {
                                 id: seat.id,
                                 name: selectedUserPassenger.name,
@@ -299,8 +299,8 @@ const EditUserInfo = ({
     function EditUserInfo(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setIsAddNewUser(false)
-        isAddNewUser ? addNewUserHandler() :
-            upDateUserInfoHandler(selectedUser._id, [...trips.map(trip => trip.tripId)])
+        // isAddNewUser ? addNewUserHandler() :
+        //     upDateUserInfoHandler(selectedUser._id, [...trips.map(trip => trip.tripId)])
         setIsShowEditUserInfo(false)
     }
 
@@ -367,14 +367,15 @@ const EditUserInfo = ({
                     <Button variant="outlined" size="small" color="info">
                         Id: {selectedUser._id}
                     </Button>
-                    <Button variant="outlined" size="small" color="error" className='ml-[2%]' onClick={deleteUser}>
+                    {/* <Button variant="outlined" size="small" color="error" className='ml-[2%]' onClick={deleteUser}>
                         Удалить пользователя
-                    </Button>
+                    </Button> */}
                 </div>
             }
             <form onSubmit={EditUserInfo}>
-                <div className='grid grid-rows-1 grid-cols-5 gap-4'>
+                {/* <div>
                     <TextField
+                        aria-readonly
                         // required
                         id="username"
                         type='text'
@@ -439,8 +440,25 @@ const EditUserInfo = ({
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         onFocus={(e) => e.target.select()}
                     />
-                </div>
-                <Box sx={{ display: 'flex', marginTop: '2%', justifyContent: 'space-between' }}>
+                </div> */}
+                <Card sx={{ maxWidth: 275 }}>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                           Username: {username}
+                        </Typography>
+                        <Typography variant="subtitle1" component="div">
+                            ФИО: {surname} {name}
+                        </Typography>
+                        <Typography variant="subtitle1">
+                            Email: {email}
+                        </Typography>
+                        <Typography variant="subtitle1">
+                            Номер телефона: {phoneNumber}
+                        </Typography>
+                       
+                    </CardContent>
+                </Card>
+                {/* <Box sx={{ display: 'flex', marginTop: '2%', justifyContent: 'space-between' }}>
                     <Box sx={{ width: '48%' }}>
                         <h1 className='font-bold mb-2'>Пассажиры</h1>
                         <Box sx={{ display: 'flex', height: '50px', width: '100%' }}>
@@ -497,66 +515,68 @@ const EditUserInfo = ({
                             />
                         </Box>
                     </Box>
-                    <Box sx={{ width: '48%' }}>
-                        <h1 className='font-bold mb-2'>Поездки</h1>
-                        <Box sx={{ display: 'flex', height: '50px', width: '100%' }}>
-                            <Paper
-                                component="form"
-                                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '60%' }}
-                            >
-                                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                                    <SearchIcon />
-                                </IconButton>
-                                <Autocomplete
-                                    value={TripsSearchValue}
-                                    onChange={(event: any, newValue: string | null) => {
-                                        setTripsSearchValue(newValue || '')
-                                    }}
-                                    freeSolo
-                                    options={[]}
-                                    renderInput={(params) => (
-                                        <InputBase
-                                            {...params}
-                                            sx={{ ml: 1, flex: 1 }}
-                                            placeholder="Поиск"
-                                            inputProps={{ ...params.inputProps, 'aria-label': 'search google maps' }}
-                                            onChange={(event) => setTripsSearchValue(event.target.value)}
-                                        />
-                                    )}
-                                />
-
-                            </Paper>
-                        </Box>
-                        <Box sx={{ height: 300, marginTop: '2%' }}>
-                            <DataGrid
-                                sx={{
-                                    [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]: {
-                                        outline: 'none',
-                                    },
-                                    [`& .${gridClasses.columnHeader}:focus, & .${gridClasses.columnHeader}:focus-within`]:
-                                    {
-                                        outline: 'none',
-                                    },
+                   
+                </Box> */}
+                <Box sx={{ marginTop: '2%' }}>
+                    <h1 className='font-bold mb-2'>Поездки</h1>
+                    <Box sx={{ display: 'flex', height: '50px', width: '100%' }}>
+                        <Paper
+                            component="form"
+                            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%' }}
+                        >
+                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                <SearchIcon />
+                            </IconButton>
+                            <Autocomplete
+                                sx={{ width: '100%' }}
+                                value={TripsSearchValue}
+                                onChange={(event: any, newValue: string | null) => {
+                                    setTripsSearchValue(newValue || '')
                                 }}
-                                disableRowSelectionOnClick
-                                rowSelection={false}
-                                disableMultipleRowSelection
-                                hideFooterSelectedRowCount
-                                disableColumnResize
-                                disableColumnMenu
-                                apiRef={TripssApiRef}
-                                rows={TripListRows}
-                                columns={TripListColumns}
-                                onRowClick={(params) => openShowTripsWindow(params)}
-                                getRowId={(row) => row.orderId}
+                                freeSolo
+                                options={[]}
+                                renderInput={(params) => (
+                                    <InputBase
+                                        {...params}
+                                        sx={{ ml: 1, flex: 1 }}
+                                        placeholder="Поиск"
+                                        inputProps={{ ...params.inputProps, 'aria-label': 'search google maps' }}
+                                        onChange={(event) => setTripsSearchValue(event.target.value)}
+                                    />
+                                )}
                             />
-                        </Box>
+
+                        </Paper>
+                    </Box>
+                    <Box sx={{ height: 300, marginTop: '2%' }}>
+                        <DataGrid
+                            sx={{
+                                [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]: {
+                                    outline: 'none',
+                                },
+                                [`& .${gridClasses.columnHeader}:focus, & .${gridClasses.columnHeader}:focus-within`]:
+                                {
+                                    outline: 'none',
+                                },
+                            }}
+                            disableRowSelectionOnClick
+                            rowSelection={false}
+                            disableMultipleRowSelection
+                            hideFooterSelectedRowCount
+                            disableColumnResize
+                            disableColumnMenu
+                            apiRef={TripssApiRef}
+                            rows={TripListRows}
+                            columns={TripListColumns}
+                            onRowClick={(params) => openShowTripsWindow(params)}
+                            getRowId={(row) => row.orderId}
+                        />
                     </Box>
                 </Box>
 
                 <div className='flex justify-end'>
-                    <button className='mt-3' onClick={cancelBtn}>Отмена</button>
-                    <Button type="submit" variant="contained" className='bg-[#2A5FCF] hover:bg-[#134bc4] mt-4 ml-4' >{isAddNewUser ? 'Добавить' : 'Сохранить'}</Button>
+                    {/* <button className='mt-3' onClick={cancelBtn}>Отмена</button> */}
+                    <Button type="submit" variant="contained" className='bg-[#2A5FCF] hover:bg-[#134bc4] mt-4 ml-4' >Ок</Button>
                 </div>
             </form>
         </div>

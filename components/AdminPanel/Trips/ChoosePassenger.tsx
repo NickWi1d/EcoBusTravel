@@ -27,7 +27,7 @@ const ChoosePassenger = ({ setIsShowSeatWindow, clickedPalce, selectedSeat, setS
                 <h1 className='font-bold text-lg'>Текущий пассажир</h1>
                 <div className={styles.passengerInfo}>
                     <h1 className='mb-1 cursor-pointer'>{selectedSeat.owner?.surname} {selectedSeat.owner?.name} {selectedSeat.owner?.patronymic}</h1>
-                    <p className='cursor-pointer'>{selectedSeat.owner?.documentNumber}</p>
+                    {/* <p className='cursor-pointer'>{selectedSeat.owner?.documentNumber}</p> */}
                 </div>
             </div>
             {/* } */}
@@ -41,7 +41,7 @@ const ChoosePassenger = ({ setIsShowSeatWindow, clickedPalce, selectedSeat, setS
                             if (passenger.id !== selectedSeat.owner?.id) {
                                 return <div key={index} className={styles.passengerInfo} onClick={() => pickPassenger(passenger, user)}>
                                     <h1 className='mb-1 cursor-pointer'>{passenger.surname} {passenger.name} {passenger.patronymic}</h1>
-                                    <p className='cursor-pointer'>{passenger.documentNumber}</p>
+                                    {/* <p className='cursor-pointer'>{passenger.documentNumber}</p> */}
                                 </div>
                             }
                         })}

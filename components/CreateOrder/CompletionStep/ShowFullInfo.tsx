@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Box, Paper, Table, TableHead, TableBody, TableRow, TableCell, Typography, CardMedia, Card, CardContent, TableContainer } from "@mui/material";
 import Divider from '@mui/material/Divider';
-import { CustomUserTrip, UserTrip } from '@/types/types';
+import { BusTrip, CustomUserTrip, Passenger, UserTrip } from '@/types/types';
 
 
 interface DeletedTrips {
@@ -45,37 +45,23 @@ function calculateArrivalDate(startDate: string, startTime: string, travelTime: 
     return `${day}.${month}.${year} в ${hoursArrival}:${minutesArrival}`;
 }
 
-const ShowUserTripInfo = ({ setIsShowUserTripInfo, selectedUserTrip, setTrips, setDeletedTrips }: { setIsShowUserTripInfo: React.Dispatch<React.SetStateAction<boolean>>, selectedUserTrip: CustomUserTrip, setTrips:React.Dispatch<React.SetStateAction<UserTrip[] | []>>, setDeletedTrips:React.Dispatch<React.SetStateAction<DeletedTrips[]>> }) => {
+const ShowUserTripInfo = ({ 
+    currentPassengers, 
+    selectedSeats, 
+    tripData
+}: { 
+    currentPassengers:Passenger[], 
+    selectedSeats:string[], 
+    tripData:BusTrip | undefined
+}) => {
     
-    function cancelUserTrip() {
-        setDeletedTrips(prev => [...prev, {
-            orderId:selectedUserTrip.orderId,
-            tripId: selectedUserTrip.tripId,
-            amountOfTickets:selectedUserTrip.seats.length
-        }])
-        setTrips(prev => {
-            let newTrips = prev.filter(trip => {
-                if(trip.orderId !== selectedUserTrip.orderId){
-                    return trip
-                }
-            })
-            return newTrips
-        })
-        setIsShowUserTripInfo(false)
-    }
     return (
 
         
-        <div>
+        <Paper elevation={3} className={'p-[2%]'}>
             <div className=' mb-[2%]'>
                 <Button variant="outlined" size="small" color="info" className='mr-[2%]' >
-                    Рейс: {selectedUserTrip.tripId}
-                </Button>
-                <Button variant="outlined" size="small" color="info" >
-                    Заказ: {selectedUserTrip.tripId}
-                </Button>
-                <Button variant="outlined" size="small" color="error" className='ml-[2%]' onClick={cancelUserTrip}>
-                    Отменить рейс
+                    Рейс: {tripData?._id}
                 </Button>
             </div>
 
@@ -85,28 +71,28 @@ const ShowUserTripInfo = ({ setIsShowUserTripInfo, selectedUserTrip, setTrips, s
                         Данные рейса
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <img src="/qr-code.png" alt="" width={100} className='mr-[5%]'/>
+                        {/* <img src="/qr-code.png" alt="" width={100} className='mr-[5%]'/> */}
                         <Box>
 
                             <Typography >
-                                {selectedUserTrip.from}
+                                {tripData?.from}
                             </Typography>
 
                             <div >
-                                {selectedUserTrip.date && formatDate(selectedUserTrip.date).split('-').reverse().join('.')} в {selectedUserTrip.startTime}<br></br>
-                                {selectedUserTrip.departure}пока что пусто
+                                {tripData?.date && formatDate(tripData.date).split('-').reverse().join('.')} в {tripData?.startTime}<br></br>
+                                {tripData?.departureAddress}
                             </div>
                         </Box>
                         <img src="/free-icon-minus-339879.png" width={40} className='ml-[1%] mr-[1%]' />
-                        <p >{selectedUserTrip.travelTime}</p>
+                        <p >{tripData?.travelTime}</p>
                         <img src="/free-icon-minus-339879.png" width={40} className='ml-[1%] mr-[1%]' />
                         <Box>
                             <Typography>
-                                {selectedUserTrip.to}
+                                {tripData?.to}
                             </Typography>
                             <div>
-                                {calculateArrivalDate(formatDate(selectedUserTrip.date) || '', selectedUserTrip.startTime || '', selectedUserTrip.travelTime || '')}<br></br>
-                                {selectedUserTrip.destination}пока что пусто
+                                {calculateArrivalDate(formatDate(tripData?.date || '') || '', tripData?.startTime || '', tripData?.travelTime || '')}<br></br>
+                                {tripData?.destinationAddress}
                             </div>
                         </Box>
                     </Box>
@@ -125,7 +111,7 @@ const ShowUserTripInfo = ({ setIsShowUserTripInfo, selectedUserTrip, setTrips, s
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {selectedUserTrip.seats.map((seat) => (
+                                {currentPassengers.map((seat, index) => (
                                     <TableRow
                                         key={seat.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -133,7 +119,7 @@ const ShowUserTripInfo = ({ setIsShowUserTripInfo, selectedUserTrip, setTrips, s
                                         <TableCell component="th" scope="row">
                                             {seat.surname} {seat.name} {seat.patronymic}
                                         </TableCell>
-                                        <TableCell align='left'>{seat.seatNumber}</TableCell>
+                                        <TableCell align='left'>{selectedSeats[index]}</TableCell>
                                         <TableCell align='left'>{seat.birthDate}</TableCell>
                                         <TableCell align='left'>{seat.gender}</TableCell>
                                     </TableRow>
@@ -143,8 +129,7 @@ const ShowUserTripInfo = ({ setIsShowUserTripInfo, selectedUserTrip, setTrips, s
                     </TableContainer>
                 </CardContent>
             </Box>
-            <Button type="submit" variant="text" onClick={() => setIsShowUserTripInfo(false)}>ОК</Button>
-        </div>
+        </Paper>
     )
 }
 

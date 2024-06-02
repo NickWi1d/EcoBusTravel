@@ -15,14 +15,20 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"],
-      "@/components/*":["./components/*"],
-      "@/pages/*":["./pages/*"],
-      "@/styles/*":["./styles/*"],
-      "@/store/*":["./store/*"],
-      "@/lib/*":["./lib/*"],
-      "@/types/*":["./types/*"],
+      "@/components/*": ["./components/*"],
+      "@/pages/*": ["./pages/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/store/*": ["./store/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/types/*": ["./types/*"],
+      "@/fonts/*": ["./fonts/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "components/DejaVuSans.js"
+  ],
   "exclude": ["node_modules"]
 }

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 // import L from 'leaflet';
-import { clearSeatsInfo } from '@/components/CreateOrder/ChoosePlaces';
+import { clearSeatsInfo } from '@/components/CreateOrder/FirstStep/ChoosePlaces';
 import { SearchTrips } from '@/components/SearchTrips/SearchTrips';
 import { useLazyGetCitesQuery } from '@/store/reducers/api/app';
-import About from '@/components/About';
-import Footer from '@/components/Footer';
+import About from '@/components/MainPage/About';
+import Footer from '@/components/MainPage/Footer';
 
 const Home = () => {
 
@@ -19,7 +19,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (GetCitesSuccess  && GetCitesData){
+    if (GetCitesSuccess && GetCitesData) {
       console.log(GetCitesData.cities[0].cities);
       setCities(GetCitesData.cities[0].cities)
     }
@@ -41,7 +41,7 @@ const Home = () => {
 
   return (
     <main>
-      <SearchTrips cities={cities}/>
+      <SearchTrips cities={cities} />
       <About></About>
       <Footer></Footer>
       {/* <div id="map" style={{ height: '400px' }}></div> */}

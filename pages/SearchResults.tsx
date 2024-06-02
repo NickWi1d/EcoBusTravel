@@ -9,7 +9,7 @@ import style from '@/styles/SearchResults.module.scss';
 import { Box, Button, CircularProgress, Grid, Link, Paper, Typography } from '@mui/material';
 import { BusTrip, CustomAlertType, QueryParams, SeatData, Params } from '@/types/types';
 import { useSearchParams } from 'next/navigation';
-import { clearSeatsInfo } from '@/components/CreateOrder/ChoosePlaces';
+import { clearSeatsInfo } from '@/components/CreateOrder/FirstStep/ChoosePlaces';
 import { useLazyGetCitesQuery, useLazyGetTripsDataQuery } from '@/store/reducers/api/app';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -174,7 +174,7 @@ const SearchResults = () => {
     setQueryResults(sortedTrips);
   }, [sortPriceBnt])
 
-  function formatDate(dateString:string) {
+  function formatDate(dateString: string) {
     const months = [
       "января", "февраля", "марта", "апреля", "мая", "июня",
       "июля", "августа", "сентября", "октября", "ноября", "декабря"
@@ -208,11 +208,11 @@ const SearchResults = () => {
           {
             (queryResults.length !== 0 && !isTripsDataLoading) && <h1 className='font-bold text-2xl mb-4'>По вашему запросу {queryResults.length === 1 ? 'найден' : 'найдено'} {queryResults.length} {
               queryResults.length === 1 ? 'рейс' : (queryResults.length === 2 || queryResults.length === 3 || queryResults.length === 4) ? 'рейса' : 'рейсов'
-              }</h1>
+            }</h1>
           }
           <Box sx={{ width: '100%' }}>
             {
-              
+
               (queryResults.length !== 0 && !isTripsDataLoading) && <Typography variant="h6" sx={{ marginBottom: '16px', fontWeight: 'bold', marginTop: '1%' }}>{filterData.from}<ArrowRightAltIcon fontSize='large'></ArrowRightAltIcon>{filterData.to + ', ' + formatDate(filterData.date || '')}</Typography>
             }
             {queryResults.length !== 0 &&
@@ -257,7 +257,7 @@ const SearchResults = () => {
                 </Box>
                 <Box sx={{ flex: '1 1 25%' }} />
               </Box>}
-            {queryResults.length !== 0 && queryResults.map((result: BusTrip, index: number) => (
+            {(!isTripsDataLoading && queryResults.length !== 0) && queryResults.map((result: BusTrip, index: number) => (
               <TripCard key={index}
                 result={result}
                 setAlertType={setAlertType}

@@ -10,7 +10,7 @@ import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import Header from '@/components/Navigation/Header';
 import { CustomAlertType } from '@/types/types';
-import { clearSeatsInfo } from '@/components/CreateOrder/ChoosePlaces';
+import { clearSeatsInfo } from '@/components/CreateOrder/FirstStep/ChoosePlaces';
 
 
 
@@ -94,7 +94,7 @@ const LogIn: FC = () => {
 
 
   async function handleRegistration(username: string, password: string, email: string) {
-    signUp({ username, password, email, surname:'', name:'', passengers:[], trips:[], phoneNumber:'' })
+    signUp({ username, password, email, surname: '', name: '', passengers: [], trips: [], phoneNumber: '' })
   }
 
 
@@ -102,7 +102,7 @@ const LogIn: FC = () => {
     fetchRepos({ username: username, type: 'LOGIN', password: password })
   }
 
-  function AdminRoute(){
+  function AdminRoute() {
     router.push('/Admin')
   }
   return (

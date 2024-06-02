@@ -1,26 +1,51 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import EmailTemplate from '../../components/EmailTemplate';
-import { Resend } from 'resend';
+// pages/api/send-email.ts
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { NextApiRequest, NextApiResponse } from 'next';
+import nodemailer from 'nodemailer';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const sendEmail = async (req: NextApiRequest, res: NextApiResponse) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send({ message: 'Only POST requests are allowed' });
+    }
+
+    const { to, subject, text, pdfData } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', 
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+        // user: 'nikyaeld@gmail.com',
+        // pass: 'qhhbhcrzphzxsxqj',
+      },
+    });
+
+    const mailOptions = {
+      from: 'nikyaeld@gmail.com',
+      to: to,
+      subject: subject,
+      text: text,
+      attachments: [
+        {
+            filename: 'ticket.pdf',
+            content: pdfData,
+            encoding: 'base64'
+        },
+      ],
+    };
+
     try {
-        //   const {  } = req.body
-        const { data, error } = await resend.emails.send({
-            from: 'Acme <onboarding@resend.dev>',
-            to: ['uaelnikd@gmail.com'],
-            subject: 'Hello world',
-            react: EmailTemplate({ firstName: 'Yes, bitch! :)' }),
-        });
-
-        if (error) {
-            return res.status(400).json(error);
+        await transporter.sendMail(mailOptions);
+        res.status(200).send('Email sent successfully');
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.toString() });
+        } else {
+            res.status(500).json({ error: 'Unknown error' });
         }
-        res.status(200).json(data);
-    } catch (error) {
-        console.error(':)', error);
-        return res.status(500).json({ message: 'Internal server error' });
     }
 
 };
+
+
+export default sendEmail;

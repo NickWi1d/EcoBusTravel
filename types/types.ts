@@ -28,7 +28,19 @@ export interface ServerResponseGetCitiesData {
 }
 export interface ServerResponseGetBusesData {
     message: string
-    buses: Bus[]
+    buses?: Bus[],
+    bus?: Bus
+}
+export interface ServerResponseGetFaultyTripsData {
+    message: string
+    faultyTrip: {
+        tripId:string,
+        typeOfBus:typeOfBus
+    }
+}
+export interface ServerResponseAddBus {
+    message: string
+    addBus: AddUser
 }
 export interface Cities{
     _id: string
@@ -81,7 +93,7 @@ export interface UserTrip {
         from: string,
         price: number,
         to: string,
-        type: typeOfBus,
+        busNumber: string,
         availableSeats: number,
         travelTime: string,
         reservedSeats: number,
@@ -128,7 +140,7 @@ export interface BusTrip {
     from: string,
     price: number,
     to: string,
-    type: typeOfBus,
+    busNumber: string,
     availableSeats: number,
     travelTime: string,
     reservedSeats: number,
@@ -165,7 +177,7 @@ export interface CustomUserTrip {
     from: string,
     price: number,
     to: string,
-    type: typeOfBus,
+    busNumber: string,
     availableSeats: number,
     travelTime: string,
     reservedSeats: number,

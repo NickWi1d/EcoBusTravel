@@ -1,4 +1,4 @@
-import { ServerResponseGetUserData, ServerResponseAddUser, ServerResponseGetTripsData, ServerResponseUpDateTripInfo, ServerResponseGetAllUsers, ServerResponseAddTrip, ServerResponseGetCitiesData, ServerResponseGetBusesData } from "@/types/types"
+import { ServerResponseGetUserData, ServerResponseAddUser, ServerResponseGetTripsData, ServerResponseUpDateTripInfo, ServerResponseGetAllUsers, ServerResponseAddTrip, ServerResponseGetCitiesData, ServerResponseGetBusesData, ServerResponseAddBus, ServerResponseGetFaultyTripsData } from "@/types/types"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
 interface IParams {
@@ -100,8 +100,7 @@ export const App = createApi({
             query:(body:IBody)=>({
                 url:`send`,
                 method:'POST',
-                body: body
-                
+                body: body 
             })
         }),
         getBuses: build.query<ServerResponseGetBusesData, object>({
@@ -117,6 +116,43 @@ export const App = createApi({
                 body: body
             })
         }),
+        addNewBus: build.mutation<ServerResponseAddBus, object>({
+            query:(body:IBody)=>({
+                url:`Buses`,
+                method:'POST',
+                body: body
+                
+            })
+        }),
+        dropBus: build.mutation<ServerResponseGetUserData, string>({
+            query:(uid)=>({
+                url:`Buses`,
+                method:'DELETE',
+                params: { uid }
+            })
+        }),
+        getFaultyTrip: build.query<ServerResponseGetFaultyTripsData, object>({
+            query: (params:IParams) => ({
+                url: `FaultyTrips`,
+                params: params
+            })
+        }),
+        addFaultyTrip: build.mutation<ServerResponseAddBus, object>({
+            query:(body:IBody)=>({
+                url:`FaultyTrips`,
+                method:'POST',
+                body: body
+                
+            })
+        }),
+        dropFaultyTrip: build.mutation<ServerResponseGetUserData, string>({
+            query:(tripId)=>({
+                url:`FaultyTrips`,
+                method:'DELETE',
+                params: { tripId }
+            })
+        }),
+        
     })
 })
 
@@ -134,5 +170,10 @@ export const {
     useLazyGetCitesQuery,
     useSendEmailMutation,
     useLazyGetBusesQuery,
-    useUpDateBusInfoMutation
+    useUpDateBusInfoMutation, 
+    useAddNewBusMutation,
+    useDropBusMutation,
+    useLazyGetFaultyTripQuery,
+    useAddFaultyTripMutation,
+    useDropFaultyTripMutation
 } = App

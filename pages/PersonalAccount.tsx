@@ -13,7 +13,7 @@ import Settings from "@/components/PersonalAccount/Settings";
 import Info from "@/components/PersonalAccount/Info";
 import { BusTrip, CustomAlertType, CustomUserTrip, DeletedTrips, Passenger, UserTrip } from "@/types/types";
 import { Head } from "next/document";
-import { clearSeatsInfo } from "@/components/CreateOrder/ChoosePlaces";
+import { clearSeatsInfo } from "@/components/CreateOrder/FirstStep/ChoosePlaces";
 import Passengers from "@/components/PersonalAccount/Passengers";
 import Trips from "@/components/PersonalAccount/Trips";
 
@@ -104,7 +104,7 @@ const PersonalAccount = () => {
     driver: '',
     finishTime: '',
     price: 0,
-    type: 'L',
+    busNumber: '',
     availableSeats: 0,
     travelTime: '',
     reservedSeats: 0,
@@ -196,7 +196,7 @@ const PersonalAccount = () => {
                 from: busTrip.from,
                 price: busTrip.price,
                 to: busTrip.to,
-                type: busTrip.type,
+                busNumber: busTrip.busNumber,
                 availableSeats: busTrip.availableSeats,
                 travelTime: busTrip.travelTime,
                 reservedSeats: busTrip.reservedSeats,
@@ -240,14 +240,14 @@ const PersonalAccount = () => {
 
 
   useEffect(() => {
-    if(UpdateUserData && isUpdateSuccess && upDateData && isUpDateTripInfoSuccess){
+    if (UpdateUserData && isUpdateSuccess && upDateData && isUpDateTripInfoSuccess) {
       setUserTrips(prev => {
         let newUsersTrips = prev.filter(trip => trip.orderId !== deletedTrip.orderId)
         return newUsersTrips
       })
     }
   }, [UpdateUserData, isUpdateSuccess, upDateData, isUpDateTripInfoSuccess])
-  
+
 
   useEffect(() => {
     if (isUpDateError && UpDateError) {
@@ -289,30 +289,26 @@ const PersonalAccount = () => {
   function deleteTripHandler() {
     updateUserData({ uid, type: 'DELETE_USER_TRIP', orderId: deletedTrip.orderId, userTrips: userTrips })
     upDateTripInfo({
-      id: deletedTrip.tripId, 
-      type:'DELETE_ORDER',
-      seats:AllTrips.filter(trip => {
+      id: deletedTrip.tripId,
+      type: 'DELETE_ORDER',
+      seats: AllTrips.filter(trip => {
         if (trip._id === selectedTrip.tripId) {
           return trip.seats
         }
-      })[0].seats, 
-      orderId:deletedTrip.orderId, 
-      availableSeats:AllTrips.filter(trip => {
+      })[0].seats,
+      orderId: deletedTrip.orderId,
+      availableSeats: AllTrips.filter(trip => {
         if (trip._id === selectedTrip.tripId) {
           return trip.availableSeats
         }
-      })[0].availableSeats, 
-      reservedSeats:AllTrips.filter(trip => {
+      })[0].availableSeats,
+      reservedSeats: AllTrips.filter(trip => {
         if (trip._id === selectedTrip.tripId) {
           return trip.reservedSeats
         }
-      })[0].reservedSeats, 
-      amountOfTickets:deletedTrip.amountOfTickets
+      })[0].reservedSeats,
+      amountOfTickets: deletedTrip.amountOfTickets
     })
-  }
-
-  function PrintTheTicket() {
-    sendEmail({})
   }
 
   return (
@@ -394,7 +390,8 @@ const PersonalAccount = () => {
             selectedTrip={selectedTrip}
             deleteTripHandler={deleteTripHandler}
             setDeletedTrip={setDeletedTrip}
-            PrintTheTicket={PrintTheTicket}
+            name={name}
+            email={email}
           ></Trips>
         </TabPanel>
         <TabPanel value={value} index={2}>

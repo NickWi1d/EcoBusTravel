@@ -2,19 +2,24 @@ import React, { useEffect, useState } from 'react'
 import { Tab, Tabs, Box, TextField, Button, Alert, AlertTitle } from "@mui/material";
 import styles from '@/styles/Admin.module.scss'
 import UsersManagement from '@/components/AdminPanel/Users/UsersManagement';
-import { useAddNewTripMutation, useCancelTripMutation, useDeleteMutation, useLazyGetAllUsersQuery, useLazyGetBusesQuery, useLazyGetTripsDataQuery, useLazyLoginQuery, useSignUpMutation, useUpDateBusInfoMutation, useUpDateTripInfoMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app'
+import { useAddFaultyTripMutation, useAddNewBusMutation, useAddNewTripMutation, useCancelTripMutation, useDeleteMutation, useDropBusMutation, useDropFaultyTripMutation, useLazyGetAllUsersQuery, useLazyGetBusesQuery, useLazyGetCitesQuery, useLazyGetTripsDataQuery, useLazyLoginQuery, useSignUpMutation, useUpDateBusInfoMutation, useUpDateTripInfoMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app'
 import { Bus, BusTrip, DeletedTrips, ExtendPassenger, IUser, Passenger, SeatData, typeOfBus } from '@/types/types';
 import TripsManagement from '@/components/AdminPanel/Trips/TripsManagement';
 import EditTripInfo from '@/components/AdminPanel/Trips/EditTripInfo';
 import EditUserInfo from '@/components/AdminPanel/Users/EditUserInfo';
 import BusesManagement from '@/components/AdminPanel/Buses/BusesManagement';
 import { idID } from '@mui/material/locale';
+import { log } from 'console';
 
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+}
+
+interface BusTripExtended extends BusTrip {
+  warning: boolean;
 }
 
 
@@ -51,6 +56,7 @@ function a11yProps(index: number) {
 
 const Admin = () => {
   const [value, setValue] = useState(0)
+  const [cities, setCities] = useState<string[]>([])
   const [usersList, setUsersList] = useState<IUser[]>([])
   const [tripsList, setTripsList] = useState<BusTrip[] | []>([])
   const [busesList, setBusesList] = useState<Bus[] | []>([])
@@ -61,7 +67,7 @@ const Admin = () => {
   const [isShowEditUserInfo, setIsShowEditUserInfo] = useState(false)
   const [isShowEditTripInfo, setIsShowEditTripInfo] = useState(false)
   const [deletedTrips, setDeletedTrips] = useState<DeletedTrips[]>([])
-  const [selectedTrip, setSelectedTrip] = useState<BusTrip>({
+  const [selectedTrip, setSelectedTrip] = useState<BusTripExtended>({
     _id: '',
     date: '',
     driver: '',
@@ -69,12 +75,12 @@ const Admin = () => {
     from: '',
     price: 0,
     to: '',
-    type: 'L',
+    busNumber: '',
     availableSeats: 50,
     travelTime: '',
     reservedSeats: 0,
     seats: Array.from({ length: 50 }, () => ({
-      orderId:'',
+      orderId: '',
       available: true,
       user: {
         _id: '',
@@ -82,7 +88,7 @@ const Admin = () => {
         email: '',
         surname: '',
         name: '',
-        phoneNumber:''
+        phoneNumber: ''
       },
       owner: {
         id: '',
@@ -97,8 +103,9 @@ const Admin = () => {
     startTime: '',
     destination: '',
     departure: '',
-    destinationAddress:'',
-    departureAddress:''
+    destinationAddress: '',
+    departureAddress: '',
+    warning:true
   })
   const [selectedUser, setSelectedUser] = useState<IUser>({
     _id: '',
@@ -112,12 +119,16 @@ const Admin = () => {
     trips: []
   })
   const [selectedBus, setSelectedBus] = useState<Bus>({
-    _id:'',
-    type:'L',
-    amountOfSeats:0,
-    plateNumber:''
+    _id: '',
+    type: 'L',
+    amountOfSeats: 0,
+    plateNumber: ''
   })
 
+  const [isEditBusInfo, setIsEditBusInfo] = useState(false)
+  const [isAddNewBus, setIsAddNewBus] = useState(false)
+
+  const [loading, setLoading] = useState(false)
   const [getUsersData, { isLoading: isUsersDataLoading, isError: isGettingUsersDataError, data: UsersData, isSuccess: isGettingUsersDataSuccess, error: getingUsersDataError }] = useLazyGetAllUsersQuery()
   const [getTripsData, { isLoading: isTripsDataLoading, isError: isTripsDataError, data: TripsData, isSuccess: TripsDataSuccess, error: TripsDataError }] = useLazyGetTripsDataQuery()
   const [upDateTripInfo, { isSuccess: isUpDateTripInfoSuccess, data: upDateData, isError: isUpDateTripInfoError, error: UpDateTripInfoError }] = useUpDateTripInfoMutation()
@@ -128,6 +139,11 @@ const Admin = () => {
   const [getBuses, { isLoading: isGetBusesLoading, isError: isGetBusesError, data: BusesData, isSuccess: isGetBusesSuccess, error: GetBusesError }] = useLazyGetBusesQuery()
   const [upDateBusInfo, { isSuccess: isUpDateBusInfoSuccess, data: upDateBusData, isError: isUpDateBusInfoError, error: UpDateBusInfoError }] = useUpDateBusInfoMutation()
   const [deleteUser, { data: deleteUserData, isSuccess: isDeletionUserSuccess }] = useDeleteMutation()
+  const [addNewBus, { isLoading: isAddNewBusLoading, isError: isSAddNewBusError, data: addNewBusResult, isSuccess: addNewBusSuccess, error: AddNewBusError }] = useAddNewBusMutation()
+  const [deleteBus, { data: deleteBusData, isSuccess: isDeletionBusSuccess }] = useDropBusMutation()
+  const [addFaultyTrip, { isLoading: isAddFaultyTripLoading, isError: isSAddFaultyTripError, data: addFaultyTripResult, isSuccess: addFaultyTripSuccess, error: AddFaultyTripError }] = useAddFaultyTripMutation()
+  const [deleteFaultyTrip, { data: deleteFaultyTripData, isSuccess: isDeleteFaultyTripSuccess }] = useDropFaultyTripMutation()
+  const [getCites, { isLoading: isGetCitesLoading, isError: iGetCitesError, data: GetCitesData, isSuccess: GetCitesSuccess, error: GetCitesError }] = useLazyGetCitesQuery()
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -136,7 +152,14 @@ const Admin = () => {
     getUsersData({ type: 'GET_ALL_DATA' })
     getTripsData({})
     getBuses({})
+    getCites({})
   }, [])
+  useEffect(() => {
+    if (GetCitesSuccess  && GetCitesData){
+      console.log(GetCitesData.cities[0].cities);
+      setCities(GetCitesData.cities[0].cities)
+    }
+  }, [GetCitesSuccess, GetCitesData])
   useEffect(() => {
     if (isGettingUsersDataSuccess && UsersData && TripsDataSuccess && TripsData) {
       console.log('here', UsersData)
@@ -164,7 +187,7 @@ const Admin = () => {
                     from: tripData.from,
                     price: tripData.price,
                     to: tripData.to,
-                    type: tripData.type,
+                    busNumber: tripData.busNumber,
                     availableSeats: tripData.availableSeats,
                     travelTime: tripData.travelTime,
                     reservedSeats: tripData.reservedSeats,
@@ -188,7 +211,7 @@ const Admin = () => {
             email: user.email,
             surname: user.surname,
             name: user.name,
-            phoneNumber:user.phoneNumber
+            phoneNumber: user.phoneNumber
           },
           passengers: user.passengers
         }] : []
@@ -203,7 +226,7 @@ const Admin = () => {
   }, [TripsDataSuccess, TripsData])
   useEffect(() => {
     if (isGetBusesSuccess && BusesData) {
-      setBusesList(BusesData.buses)
+      setBusesList(BusesData.buses || [])
     }
   }, [isGetBusesSuccess, BusesData])
   useEffect(() => {
@@ -299,40 +322,70 @@ const Admin = () => {
       })
     }
   }, [isDeletionUserSuccess, deleteUserData])
+  useEffect(() => {
+    if (isUpDateBusInfoSuccess && upDateBusData) {
+      setIsEditBusInfo(false)
+      setLoading(false)
+    }
+  }, [isUpDateBusInfoSuccess, upDateBusData])
+  useEffect(() => {
+    if (addNewBusSuccess && addNewBusResult){
+      setIsEditBusInfo(false)
+      setLoading(false)
+      setIsAddNewBus(false)
+      getBuses({})
+    }
+  }, [addNewBusSuccess, addNewBusResult])
 
+  useEffect(() => {
+    if(isDeletionBusSuccess && deleteBusData){
+      setIsEditBusInfo(false)
+      setIsAddNewBus(false)
+      getTripsData({})
+      getBuses({})
+    }
+  }, [isDeletionBusSuccess, deleteBusData])
+  useEffect(() => {
+    if (isUpDateTripInfoSuccess && upDateData) {
+      if(selectedTrip.busNumber !== null){
+        deleteFaultyTrip(selectedTrip._id)
+      }
+    }
+  }, [isUpDateTripInfoSuccess, upDateData])
 
 
   function upDateTripInfoHandler() {
     let updatedSeats = selectedTrip.seats.map((seat, index) => {
-        return {
-          ...seat,
-          owner: {...seat.owner,
-            seatNumber: index+1
-          }
+      return {
+        ...seat,
+        owner: {
+          ...seat.owner,
+          seatNumber: index + 1
         }
+      }
     }).filter(seat => seat.available === false)
-    console.log('updatedSeats',updatedSeats);
-    
+    console.log('updatedSeats', updatedSeats);
+
     let ordersId = updatedSeats
       .filter(seat => seat.user !== null && typeof seat.user === 'object')
       .map(seat => seat.orderId)
       .filter((value, index, self) => value !== null && self.indexOf(value) === index)
-      console.log('ordersId',ordersId);
+    console.log('ordersId', ordersId);
 
     let updetedUsers = ordersId.map(orderId => {
       return {
-        orderId:orderId,
+        orderId: orderId,
         userId: updatedSeats.filter(seat => seat.user !== null && typeof seat.user === 'object' && seat.orderId === orderId).map(seat => seat.user?._id)[0],
-        tripId:selectedTrip._id,
-        seats: [...updatedSeats.filter(seat => seat.orderId === orderId ).map(seat => seat.owner)]
+        tripId: selectedTrip._id,
+        seats: [...updatedSeats.filter(seat => seat.orderId === orderId).map(seat => seat.owner)]
       }
     })
-    console.log('updetedUsers',updetedUsers);
-    upDateTripInfo({ id:selectedTrip._id, type: 'FULL_UPDATE_TRIP_INFO', trip: selectedTrip })
+    console.log('updetedUsers', updetedUsers);
+    upDateTripInfo({ id: selectedTrip._id, type: 'FULL_UPDATE_TRIP_INFO', trip: selectedTrip })
     updetedUsers.map((updatedUser, index) => {
-      let userTrips = usersList.filter(user => user._id === updatedUser.userId)[0].trips  
+      let userTrips = usersList.filter(user => user._id === updatedUser.userId)[0].trips
       console.log('userTrips', userTrips);
-      updateUserData({ uid: updatedUser.userId, type: 'UPDATE_USER_TRIPS', user:updatedUser, userTrips })
+      updateUserData({ uid: updatedUser.userId, type: 'UPDATE_USER_TRIPS', user: updatedUser, userTrips })
     })
   }
   function addNewTripHandler() {
@@ -355,12 +408,12 @@ const Admin = () => {
       let availableSeats = tripsList.filter(trip => trip._id === deletedTrip.tripId).map(trip => trip.availableSeats)[0]
       let reservedSeats = tripsList.filter(trip => trip._id === deletedTrip.tripId).map(trip => trip.reservedSeats)[0]
       let amountOfTickets = deletedTrip.amountOfTickets
-      upDateTripInfo({ id:deletedTrip.tripId, type: 'DELETE_ORDER', seats: TripSeats, orderId:deletedTrip.orderId, availableSeats, reservedSeats, amountOfTickets })
+      upDateTripInfo({ id: deletedTrip.tripId, type: 'DELETE_ORDER', seats: TripSeats, orderId: deletedTrip.orderId, availableSeats, reservedSeats, amountOfTickets })
     })
   }
   function addNewUserHandler() {
     setIsAddNewUser(true)
-    addNewUser({ username: selectedUser.username, password: selectedUser.password, email: selectedUser.email, surname: selectedUser.email, name: selectedUser.name, passengers: selectedUser.passengers, trips: selectedUser.trips, phoneNumber:selectedUser.phoneNumber })
+    addNewUser({ username: selectedUser.username, password: selectedUser.password, email: selectedUser.email, surname: selectedUser.email, name: selectedUser.name, passengers: selectedUser.passengers, trips: selectedUser.trips, phoneNumber: selectedUser.phoneNumber })
   }
   function deleteUserHandler(uid: string) {
     deleteUser(uid)
@@ -368,8 +421,24 @@ const Admin = () => {
 
 
 
-  function upDateBusInfoHandler(uid:string, typeOfBus:typeOfBus) {
-    upDateBusInfo({uid, typeOfBus})
+  function upDateBusInfoHandler(uid: string, typeOfBus: typeOfBus) {
+    setLoading(true)
+    upDateBusInfo({ uid, typeOfBus })
+  }
+  function addNewBusHandler(typeOfBus: typeOfBus, plateNumber: string) {
+    setLoading(true)
+    const amountOfSeats = typeOfBus === 'L' ? 50 : 25
+    addNewBus({ amountOfSeats, type:typeOfBus, plateNumber })
+  }
+  function deleteBusHandler(uid: string, type:typeOfBus) {
+    deleteBus(uid)
+    let tripForChange = tripsList.filter(trip => trip.busNumber === uid)
+    console.log(tripForChange);
+    
+    tripForChange.map(trip => {
+      upDateTripInfo({ id: trip._id, type: 'DELETE_BUS'})
+      addFaultyTrip({tripId:trip._id, typeOfBus:type})
+    })
   }
   return (
     <div>
@@ -401,12 +470,22 @@ const Admin = () => {
               deleteUserHandler={deleteUserHandler}
               setDeletedTrips={setDeletedTrips}
             ></EditUserInfo> :
-            <UsersManagement
-              usersList={usersList}
-              setIsShowEditUserInfo={setIsShowEditUserInfo}
-              setIsAddNewUser={setIsAddNewUser}
-              setSelectedUser={setSelectedUser}
-            />}
+          <UsersManagement
+            usersList={usersList}
+            setIsShowEditUserInfo={setIsShowEditUserInfo}
+            setIsAddNewUser={setIsAddNewUser}
+            setSelectedUser={setSelectedUser}
+
+
+            isShowEditUserInfo={isShowEditUserInfo}
+            isAddNewUser={isAddNewUser}
+            selectedUser={selectedUser}
+            upDateUserInfoHandler={upDateUserInfoHandler}
+            addNewUserHandler={addNewUserHandler}
+            deleteUserHandler={deleteUserHandler}
+            setDeletedTrips={setDeletedTrips}
+          />
+          }
 
         </TabPanel>
         <TabPanel value={value} index={1}>
@@ -423,7 +502,8 @@ const Admin = () => {
               setIsAddNewTrip={setIsAddNewTrip}
               setAreThereAnyPassengers={setAreThereAnyPassengers}
               addNewTripHandler={addNewTripHandler}
-
+              busesList={busesList}
+              cities={cities}
             ></EditTripInfo> :
             <TripsManagement
               tripsList={tripsList}
@@ -439,6 +519,13 @@ const Admin = () => {
             selectedBus={selectedBus}
             setSelectedBus={setSelectedBus}
             upDateBusInfoHandler={upDateBusInfoHandler}
+            addNewBusHandler={addNewBusHandler}
+            loading={loading}
+            isEditBusInfo={isEditBusInfo}
+            setIsEditBusInfo={setIsEditBusInfo}
+            isAddNewBus={isAddNewBus}
+            setIsAddNewBus={setIsAddNewBus}
+            deleteBusHandler={deleteBusHandler}
           ></BusesManagement>
         </TabPanel>
       </Box>

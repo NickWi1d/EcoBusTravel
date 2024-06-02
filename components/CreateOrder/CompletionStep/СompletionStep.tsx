@@ -1,14 +1,29 @@
 import React, { useEffect } from 'react'
 import { Passenger, BusTrip } from '@/types/types'
 import styles from '@/styles/CreateOrder.module.scss'
+import ShowFullInfo from './ShowFullInfo'
 
 
-const СompletionStep = ({currentPassengers, selectedSeats, tripData}:{currentPassengers:Passenger[], selectedSeats:string[], tripData:BusTrip | undefined}) => {
+const СompletionStep = ({
+  currentPassengers,
+  selectedSeats,
+  tripData
+}: {
+  currentPassengers: Passenger[],
+  selectedSeats: string[],
+  tripData: BusTrip | undefined
+}) => {
 
   return (
     // <div>{currentPassengers.map((passenger, index) => <div key={index}>{passenger.name}</div>)}</div>
     <div className={styles.completionStep}>
-    <h2 className={styles.title}>Пожалуйста, проверьте информацию о вашем заказе:</h2>
+      <ShowFullInfo 
+        currentPassengers={currentPassengers}
+        selectedSeats={selectedSeats}
+        tripData={tripData}
+      >
+      </ShowFullInfo>
+      {/* <h2 className={styles.title}>Пожалуйста, проверьте информацию о вашем заказе:</h2>
 
     <div className={styles.infoSection}>
       <h3 className={styles.subtitle}>Пассажиры:</h3>
@@ -42,8 +57,8 @@ const СompletionStep = ({currentPassengers, selectedSeats, tripData}:{currentPa
           <li><strong>Цена билета:</strong> {tripData.price}</li>
         </ul>
       )}
+    </div> */}
     </div>
-  </div>
   )
 }
 

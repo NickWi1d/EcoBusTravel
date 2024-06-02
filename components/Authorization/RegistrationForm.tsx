@@ -42,6 +42,9 @@ const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount
     console.log(ADMIN_LOGIN)
     if (username === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
       AdminRoute()
+      localStorage.setItem('token', 'true')////////
+      localStorage.setItem('uid', ADMIN_LOGIN)
+      localStorage.setItem('user', ADMIN_LOGIN)
       console.log('rere')
       return
     }

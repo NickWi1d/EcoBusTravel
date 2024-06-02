@@ -4,11 +4,11 @@ import styles from '@/styles/CreateOrder.module.scss'
 import { Stepper, Step, Box, StepButton, Button, Typography } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { BusTrip, CustomAlertType, Customer } from '@/types/types';
-import FirstStep from '@/components/CreateOrder/FirstStep';
-import SecondStep from '@/components/CreateOrder/SecondStep';
-import CompletionStep from '@/components/CreateOrder/СompletionStep'
-import { useLazyLoginQuery, useUpDateTripInfoMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app';
+import { Bus, BusTrip, CustomAlertType, Customer } from '@/types/types';
+import FirstStep from '@/components/CreateOrder/FirstStep/FirstStep';
+import SecondStep from '@/components/CreateOrder/SecondStep/SecondStep';
+import CompletionStep from '@/components/CreateOrder/CompletionStep/СompletionStep'
+import { useLazyGetBusesQuery, useLazyGetTripsDataQuery, useLazyLoginQuery, useUpDateTripInfoMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app';
 import { Passenger } from '@/types/types'
 import { getCurrentDate } from '@/components/Navigation/NavBar';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,11 +18,14 @@ import { v4 as uuidv4 } from 'uuid';
 const CreateOrder: FC = () => {
 
     const [getUserData, { isLoading: isGetUserDataLoading, isError: isGetUserDataError, data: UserData, isSuccess: isGetUserDataSuccess, error: UserDataError }] = useLazyLoginQuery()
+    const [getBusInfo, { isLoading: isGetBusInfoLoading, isError: isGetBusInfoError, data: BusInfo, isSuccess: isGetBusInfoSuccess, error: BusInfoError }] = useLazyGetBusesQuery()
     const [upDateTripInfo, { isSuccess: isUpDateTripInfoSuccess, data: upDateMessage, isError: isUpDateTripInfoError, error: UpDateTripInfoError }] = useUpDateTripInfoMutation()
     const [upDateUserInfo, { isSuccess: isUpDateUserInfoSuccess, data: upDateUserInfoMessage, isError: isUpDateUserInfoError, error: UpDateUserInfoError }] = useUpDateUserInfoMutation()
 
     const router = useRouter();
     const [tripData, setTripData] = useState<BusTrip | undefined>(undefined)
+    const [busInfo, setBusInfo] = useState<Bus | undefined>(undefined)
+
     const [user, setUser] = useState<{ uid: string, username: string, name: string, surname: string, email: string, phoneNumber:string }>({
         uid: '',
         username: '',
@@ -106,7 +109,7 @@ const CreateOrder: FC = () => {
                 price: price,
                 seats: updatedSeats,
             };
-
+            getBusInfo({id:queryParams.busNumber})
             setTripData(updatedTripData as BusTrip);
             console.log('куку', updatedTripData)
         }
@@ -120,7 +123,12 @@ const CreateOrder: FC = () => {
             setUser(prev => { return { ...prev, uid, username: currentUser } })
         }
         getUserData({ username: currentUser, type: 'GET_DATA' })
+
     }, [])
+    // useEffect(() => {
+    //     getBusInfo({id:tripData?.busNumber})
+    //     console.log("BusNumber: ", tripData?.busNumber);
+    // }, [tripData])
 
     useEffect(() => {
         if (isGetUserDataSuccess && UserData) {
@@ -129,6 +137,12 @@ const CreateOrder: FC = () => {
         }
     }, [isGetUserDataSuccess, UserData])
 
+    useEffect(() => {
+        if(isGetBusInfoSuccess && BusInfo){
+            setBusInfo(BusInfo.bus)
+        }
+    }, [isGetBusInfoSuccess, BusInfo])
+    
 
     useEffect(() => {
         getParams()
@@ -139,7 +153,7 @@ const CreateOrder: FC = () => {
         setIsFullDataFilled(true)
         for (let index = 0; index < currentPassengers.length; index++) {
             let currentPassenger = currentPassengers[index]
-            if (currentPassenger.id.length === 0 || currentPassenger.name.length === 0 || currentPassenger.surname.length === 0 || currentPassenger.patronymic.length === 0 || currentPassenger.gender.length === 0 || currentPassenger.documentNumber.length === 0 || currentPassenger.birthDate.length === 0) {
+            if (currentPassenger.id.length === 0 || currentPassenger.name.length === 0 || currentPassenger.surname.length === 0 || currentPassenger.gender.length === 0 || currentPassenger.documentNumber.length === 0 || currentPassenger.birthDate.length === 0) {
                 setIsFullDataFilled(false)
                 break
             }
@@ -308,6 +322,8 @@ const CreateOrder: FC = () => {
                                 setSelectedSeats={setSelectedSeats}
                                 isAllSeatsSelected={isAllSeatsSelected}
                                 setCurrentPassengers={setCurrentPassengers}
+                                busInfo={busInfo}
+                                isGetBusInfoLoading={isGetBusInfoLoading}
                             ></FirstStep>}
                             {activeStep == 2 && <SecondStep
                                 tripData={tripData}
@@ -341,7 +357,7 @@ const CreateOrder: FC = () => {
                                         loading={loading}
                                         loadingPosition="end"
                                         variant="contained"
-                                        className={styles.Btn}
+                                        className={`${styles.Btn} mb-[2%]`}
                                         sx={{ mr: 1 }}
                                     >
                                         {activeStep === 1 ? 'Продолжить оформление' : 'Перейти к оплате'}
@@ -354,7 +370,7 @@ const CreateOrder: FC = () => {
                                         loading={loading}
                                         loadingPosition="end"
                                         variant="contained"
-                                        className={styles.Btn}
+                                        className={`${styles.Btn} mb-[2%]`}
                                     >
                                         <span>{completedSteps() === totalSteps() - 1
                                             && 'Подтвердить'}</span>

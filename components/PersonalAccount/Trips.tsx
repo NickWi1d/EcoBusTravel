@@ -44,7 +44,8 @@ const Trips = ({
     selectedTrip,
     deleteTripHandler,
     setDeletedTrip,
-    PrintTheTicket
+    name,
+    email
 }: {
     userTrips: UserTrip[] | [],
     setUserTrips: React.Dispatch<React.SetStateAction<UserTrip[] | []>>,
@@ -52,7 +53,8 @@ const Trips = ({
     selectedTrip: CustomUserTrip,
     deleteTripHandler: () => void,
     setDeletedTrip: React.Dispatch<React.SetStateAction<DeletedTrips>>,
-    PrintTheTicket:()=>void
+    name:string,
+    email:string
     
 }) => {
 
@@ -76,7 +78,7 @@ const Trips = ({
             driver: trip.tripData.driver,
             finishTime: trip.tripData.finishTime,
             price: trip.tripData.price,
-            type: trip.tripData.type,
+            busNumber: trip.tripData.busNumber,
             availableSeats: trip.tripData.availableSeats,
             travelTime: trip.tripData.travelTime,
             reservedSeats: trip.tripData.reservedSeats,
@@ -110,7 +112,8 @@ const Trips = ({
                         setTrips={setUserTrips}
                         setDeletedTrip={setDeletedTrip}
                         setIsDeleteTrip={setIsDeleteTrip}
-                        PrintTheTicket={PrintTheTicket}
+                        name={name}
+                        email={email}
                     ></ShowTripInfo>
                 </Modal>
             }

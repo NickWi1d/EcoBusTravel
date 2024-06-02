@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FormEvent, MouseEvent, useEffect, useState } from 'react'
 import { IconButton, Paper, InputBase, Button, Autocomplete } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { IUser } from '@/types/types';
+import { DeletedTrips, IUser } from '@/types/types';
 import styles from '@/styles/Admin.module.scss'
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
@@ -11,6 +11,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Modal from '../../ModalWindows/Modal';
 import { useDeleteMutation, useDeletePassengerMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app';
 import { DataGrid, GridColDef, useGridApiRef, gridClasses, GridRowParams } from '@mui/x-data-grid';
+import EditUserInfo from './EditUserInfo';
 
 const columns: GridColDef[] = [
   {
@@ -26,6 +27,20 @@ const columns: GridColDef[] = [
     type: 'string',
     width: 350,
     sortingOrder: ['desc', 'asc', null]
+  },
+  {
+    field: 'email',
+    headerName: 'email',
+    type: 'string',
+    width: 350,
+    sortingOrder: ['desc', 'asc', null]
+  },
+  {
+    field: 'phoneNumber',
+    headerName: 'Номер телефона',
+    type: 'string',
+    width: 350,
+    sortingOrder: ['desc', 'asc', null]
   }
 ];
 
@@ -33,12 +48,28 @@ const UsersManagement = ({
   usersList,
   setIsShowEditUserInfo,
   setIsAddNewUser,
-  setSelectedUser
+  setSelectedUser,
+
+  isShowEditUserInfo,
+  isAddNewUser,
+  selectedUser,
+  upDateUserInfoHandler,
+  addNewUserHandler,
+  deleteUserHandler,
+  setDeletedTrips
 }: {
   usersList: IUser[],
   setIsShowEditUserInfo: React.Dispatch<React.SetStateAction<boolean>>,
   setIsAddNewUser: React.Dispatch<React.SetStateAction<boolean>>
-  setSelectedUser: React.Dispatch<React.SetStateAction<IUser>>
+  setSelectedUser: React.Dispatch<React.SetStateAction<IUser>>,
+
+  isShowEditUserInfo:boolean,
+  isAddNewUser: boolean,
+  selectedUser: IUser,
+  upDateUserInfoHandler: (id: string, tripsId: Array<string>) => void,
+  addNewUserHandler: () => void,
+  deleteUserHandler: (uid: string) => void,
+  setDeletedTrips: React.Dispatch<React.SetStateAction<DeletedTrips[]>>
 }) => {
 
 
@@ -76,7 +107,7 @@ const UsersManagement = ({
       email: '',
       surname: '',
       name: '',
-      phoneNumber:'',
+      phoneNumber: '',
       passengers: [],
       trips: []
     })
@@ -90,12 +121,28 @@ const UsersManagement = ({
 
   return (
     <>
+      {/* {isShowEditUserInfo && 
+        <Modal width={50}>
+          <EditUserInfo
+            setIsShowEditUserInfo={setIsShowEditUserInfo}
+            setIsAddNewUser={setIsAddNewUser}
+            isAddNewUser={isAddNewUser}
+            setSelectedUser={setSelectedUser}
+            selectedUser={selectedUser}
+            upDateUserInfoHandler={upDateUserInfoHandler}
+            addNewUserHandler={addNewUserHandler}
+            deleteUserHandler={deleteUserHandler}
+            setDeletedTrips={setDeletedTrips}
+          ></EditUserInfo>
+        </Modal>
+      } */}
       <Box sx={{ display: 'flex', height: '50px' }}>
         <Paper
           component="form"
-          sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '75%' }}
+          sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%' }}
         >
           <Autocomplete
+          sx={{width:'100%'}}
             value={searchValue}
             onChange={(event: any, newValue: string | null) => {
               setSearchValue(newValue || '');
@@ -105,7 +152,7 @@ const UsersManagement = ({
             renderInput={(params) => (
               <InputBase
                 {...params}
-                sx={{ ml: 1, flex: 1, width: 1240 }}
+                sx={{ ml: 1, flex: 1, width: '100%' }}
                 placeholder="Поиск"
                 inputProps={{ ...params.inputProps, 'aria-label': 'search google maps' }}
                 onChange={(event) => setSearchValue(event.target.value)}
@@ -116,7 +163,7 @@ const UsersManagement = ({
             <SearchIcon />
           </IconButton>
         </Paper>
-        <Button variant='contained' className={`${styles.Btn} ml-[2%] w-[25%] flex items-center`} onClick={addNewUser}>Добавить пользователя<img src="/icons8-плюс-32.png" className={'ml-3 pb-[2px]'} alt="" width={20} /></Button>
+        {/* <Button variant='contained' className={`${styles.Btn} ml-[2%] w-[25%] flex items-center`} onClick={addNewUser}>Добавить пользователя<img src="/icons8-плюс-32.png" className={'ml-3 pb-[2px]'} alt="" width={20} /></Button> */}
       </Box>
       <Box sx={{ height: 500, marginTop: '2%' }}>
         <DataGrid

@@ -1,11 +1,11 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase, closeDatabaseConnection, getDB } from '../../lib/mongodb'
 import { BusTrip, Customer, IUser, Passenger, SeatsArray } from "@/types/types";
 import { v4 as uuidv4 } from 'uuid';
 
 
-type typeOfUpDate = 'SEAT_RESERVATION' | 'FULL_UPDATE_TRIP_INFO' | 'UPDATE_SEAT_TRIP_INFO' | 'DELETE_ORDER'
+type typeOfUpDate = 'SEAT_RESERVATION' | 'FULL_UPDATE_TRIP_INFO' | 'UPDATE_SEAT_TRIP_INFO' | 'DELETE_ORDER' | 'DELETE_BUS'
 
 function TransformQueryParams(queryParams: Record<string, string>) {
   const params: Record<string, string | object> = {}
@@ -27,8 +27,8 @@ function TransformQueryParams(queryParams: Record<string, string>) {
   return params
 }
 
-const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { db } = await connectToDatabase();
+const handleRegistration = async (req: NextApiRequest, res: NextApiResponse, db: Db) => {
+  // const { db } = await connectToDatabase();
   // const db = getDB()
   try {
     const { tripData } = req.body as { tripData: BusTrip }
@@ -39,7 +39,7 @@ const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => 
       from: tripData.from,
       price: tripData.price,
       to: tripData.to,
-      type: tripData.type,
+      busNumber: tripData.busNumber,
       availableSeats: tripData.availableSeats,
       travelTime: tripData.travelTime,
       reservedSeats: tripData.reservedSeats,
@@ -62,8 +62,8 @@ const handleRegistration = async (req: NextApiRequest, res: NextApiResponse) => 
 }
 
 
-const handleLogin = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { db } = await connectToDatabase();
+const handleLogin = async (req: NextApiRequest, res: NextApiResponse, db: Db) => {
+  // const { db } = await connectToDatabase();
   // const db = getDB()
   try {
     const queryParams = req.query as Record<string, string>
@@ -86,8 +86,8 @@ const handleLogin = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { db } = await connectToDatabase();
+const handleUpdate = async (req: NextApiRequest, res: NextApiResponse, db: Db) => {
+  // const { db } = await connectToDatabase();
   // const db = getDB()
   try {
     const { id, type } = req.body as { id: string, type: typeOfUpDate }
@@ -148,7 +148,7 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
               from: trip.from,
               price: trip.price,
               to: trip.to,
-              type: trip.type,
+              busNumber: trip.busNumber,
               availableSeats: trip.availableSeats,
               travelTime: trip.travelTime,
               reservedSeats: trip.reservedSeats,
@@ -250,6 +250,20 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
         } else if (deleteOrder.matchedCount === 0) {
           return res.status(404).json({ message: 'Something went wrong' })
         }
+      } else if (type === 'DELETE_BUS'){
+        const deleteBus = await db.collection('BusTrips').updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+             busNumber: null
+            }
+          }
+        )
+        if (deleteBus.modifiedCount === 1) {
+          return res.status(200).json({ message: 'BusTrip was successfully updated' })
+        } else if (deleteBus.matchedCount === 0) {
+          return res.status(404).json({ message: 'Something went wrong' })
+        }
       }
     }
     else {
@@ -260,8 +274,8 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 }
-const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { db } = await connectToDatabase();
+const handleDelete = async (req: NextApiRequest, res: NextApiResponse, db: Db) => {
+  // const { db } = await connectToDatabase();
   // const db = getDB()
   try {
     const { uid } = req.query as { uid: string }
@@ -285,17 +299,32 @@ const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
 }
 const handleRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
-  switch (method) {
-    case 'POST':
-      return handleRegistration(req, res);
-    case 'GET':
-      return handleLogin(req, res);
-    case 'DELETE':
-      return handleDelete(req, res);
-    case 'PUT':
-      return handleUpdate(req, res);
-    default:
-      return res.status(405).json({ message: 'Method Not Allowed' });
+
+  try {
+    const { db } = await connectToDatabase();
+    switch (method) {
+      case 'POST':
+        await handleRegistration(req, res, db);
+        break;
+      case 'GET':
+        await handleLogin(req, res, db);
+        break;
+      case 'DELETE':
+        await handleDelete(req, res, db);
+        break;
+      case 'PUT':
+        await handleUpdate(req, res, db);
+        break;
+      default:
+        res.setHeader('Allow', ['POST', 'GET', 'DELETE', 'PUT']);
+        res.status(405).json({ message: 'Method Not Allowed' });
+        break;
+    }
+  } catch (error) {
+    console.error('Error handling request:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    await closeDatabaseConnection();  // Закрытие соединения
   }
 };
 export default handleRequest;
