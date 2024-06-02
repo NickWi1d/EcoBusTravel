@@ -66,7 +66,7 @@ const Passengers = ({ userPassengers, uid, isEditPassengerInfo, setIsEditPasseng
   }
 
   useEffect(() => {
-    if (isUpdateSuccess && (UpdateUserData.message === 'User passengers was successfully updated' || 'User passengers was successfully updated')) {
+    if (isUpdateSuccess && UpdateUserData?.message === 'User passengers was successfully updated' || 'User passengers was successfully updated') {
       setSurname('')
       setName('')
       setPatronymic('')
