@@ -156,7 +156,7 @@ const BusesManagement = ({
           apiRef={apiRef}
           rows={rows}
           columns={columns}
-          // onRowClick={(params) => openBusEditor(params)}
+          onRowClick={(params) => openBusEditor(params)}
         />
       </Box>
     </>
