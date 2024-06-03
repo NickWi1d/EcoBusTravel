@@ -132,6 +132,13 @@ const PersonalAccount = () => {
 
   async function deleteAccountHandler() {
     if (uid) {
+      if(userTrips.length !== 0){
+        userTrips.map(userTrip => {
+          const seats = AllTrips.filter(trip => trip._id === userTrip.tripId)[0].seats
+          console.log({id: userTrip.tripId, type: 'DELETE_ORDER', seats:seats, orderId:userTrip.orderId, availableSeats:userTrip.tripData.availableSeats, reservedSeats:userTrip.tripData.reservedSeats, amountOfTickets:userTrip.seats.length})
+          upDateTripInfo({id: userTrip.tripId, type: 'DELETE_ORDER', seats:seats, orderId:userTrip.orderId, availableSeats:userTrip.tripData.availableSeats, reservedSeats:userTrip.tripData.reservedSeats, amountOfTickets:userTrip.seats.length})
+        })
+      }
       deleteUser(uid)
       dispatch(dropUser({}))
       setShowModal(false)
