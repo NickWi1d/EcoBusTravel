@@ -86,7 +86,7 @@ const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount
         required
         id="username"
         type='text'
-        label="Имя"
+        label="Логин"
         variant="outlined"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
@@ -102,6 +102,7 @@ const RegistrationForm: React.FC<SignUpProps> = ({ Registration, isHaveAnAccount
           variant="outlined"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          inputProps={{ pattern: "^[a-zA-Z0-9._%+-]+@gmail\\.com$" }}
         />
       }
       {/* <label htmlFor="email"><b>Email</b></label> 

@@ -51,7 +51,7 @@ const Trips = ({
     setUserTrips: React.Dispatch<React.SetStateAction<UserTrip[] | []>>,
     setSelectedTrip: React.Dispatch<React.SetStateAction<CustomUserTrip>>,
     selectedTrip: CustomUserTrip,
-    deleteTripHandler: () => void,
+    deleteTripHandler: (orderId:string, tripId:string, amountOfTickets:number) => void,
     setDeletedTrip: React.Dispatch<React.SetStateAction<DeletedTrips>>,
     name:string,
     email:string
@@ -61,7 +61,7 @@ const Trips = ({
     const apiRef = useGridApiRef();
 
     const [isShowTripInfo, setIsShowTripInfo] = useState(false)
-    const [isDeleteTrip, setIsDeleteTrip] = useState(false)
+    // const [isDeleteTrip, setIsDeleteTrip] = useState(false)
 
 
 
@@ -95,12 +95,12 @@ const Trips = ({
         setIsShowTripInfo(true)
     }
 
-    useEffect(() => {
-        if (isDeleteTrip) {
-            deleteTripHandler()
-            setIsDeleteTrip(false)
-        }
-    }, [isDeleteTrip])
+    // useEffect(() => {
+    //     if (isDeleteTrip) {
+    //         deleteTripHandler()
+    //         setIsDeleteTrip(false)
+    //     }
+    // }, [isDeleteTrip])
 
     return (
         <div>
@@ -111,9 +111,10 @@ const Trips = ({
                         selectedUserTrip={selectedTrip}
                         setTrips={setUserTrips}
                         setDeletedTrip={setDeletedTrip}
-                        setIsDeleteTrip={setIsDeleteTrip}
+                        // setIsDeleteTrip={setIsDeleteTrip}
                         name={name}
                         email={email}
+                        deleteTripHandler={deleteTripHandler}
                     ></ShowTripInfo>
                 </Modal>
             }

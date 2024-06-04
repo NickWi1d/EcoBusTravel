@@ -26,6 +26,7 @@ interface TabPanelProps {
 }
 
 
+
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
@@ -58,6 +59,7 @@ const PersonalAccount = () => {
   const UpdateInfoType = 'UPDATE_INFO'
   const UpdatePasswordType = 'UPDATE_PASSWORD'
   const [uid, setUid] = useState('')
+  const [currentUser, setCurrentUser] = useState('')
   const [value, setValue] = useState(0)
   const [username, setUsername] = useState('')
   const [surname, setSurname] = useState('')
@@ -71,7 +73,7 @@ const PersonalAccount = () => {
   const [showModal, setShowModal] = useState(false)
   const [showModalConfirmDelition, setShowModalConfirmDelition] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
-  const [alertText, setAlertText] = useState('Successfully updated!')
+  const [alertText, setAlertText] = useState('Успешно сохранено!')
   const [alertType, setAlertType] = useState<CustomAlertType>('success')
 
   const [getUserData, { isLoading: isLogInLoading, isError: isLogInError, data: UserData, isSuccess: isLogInSuccess, error: logInError }] = useLazyLoginQuery()
@@ -115,6 +117,17 @@ const PersonalAccount = () => {
     departureAddress: '',
   })
 
+  const [selectedUserPassenger, setSelectedUserPassenger] = useState<Passenger>({
+    id: '',
+    birthDate: '',
+    documentNumber: '',
+    gender: '',
+    name: '',
+    patronymic: '',
+    surname: '',
+  })
+
+
   const dispatch = useDispatch()
   const router = useRouter()
 
@@ -157,7 +170,7 @@ const PersonalAccount = () => {
       updateUserData({ uid, type: UpdatePasswordType, newPassword, password: currentPassword })
       setShowModal(false)
       console.log(currentPassword)
-      setAlertText('Password was successfully updated')
+      setAlertText('Пароль был успешно сохранен')
       setAlertType('success')
       setShowAlert(true)
       setTimeout(() => {
@@ -234,14 +247,30 @@ const PersonalAccount = () => {
   }, [isDeletionSuccess, deleteUserData])
 
   useEffect(() => {
-    if (isUpdateSuccess && UpdateUserData) {
+    if (isUpdateSuccess && UpdateUserData?.message === 'User successfully updated') {
       setAlertType('success')
-      setAlertText('Successfully updated!')
+      setAlertText('Успешно сохранено!')
       setShowAlert(true)
       setTimeout(() => {
         setShowAlert(false)
       }, 3000);
       console.log('Успешно сохранено!')
+    }
+    if (isUpdateSuccess && UpdateUserData?.message === 'User passengers was successfully updated' || 'User passengers was successfully updated') {
+      setSelectedUserPassenger({
+        id: '',
+        birthDate: '',
+        documentNumber: '',
+        gender: '',
+        name: '',
+        patronymic: '',
+        surname: '',
+      })
+      setIsEditPassengerInfo(false)
+    }
+    if (isUpdateSuccess && UpdateUserData?.message === 'Passenger was successfully deleted') {
+      setIsEditPassengerInfo(false)
+      getUserData({ username: currentUser, type: 'GET_DATA' })
     }
   }, [UpdateUserData, isUpdateSuccess])
 
@@ -284,6 +313,7 @@ const PersonalAccount = () => {
     const currentUser = localStorage.getItem('user')
     const userId = localStorage.getItem('uid')
     setUid(userId || '')
+    setCurrentUser(currentUser || '')
     if (token && currentUser) {
       getUserData({ username: currentUser, type: 'GET_DATA' })
       getTripsData({})
@@ -293,17 +323,17 @@ const PersonalAccount = () => {
     setAlertText('Login is successful')
   }, [isEditPassengerInfo])
 
-  function deleteTripHandler() {
-    updateUserData({ uid, type: 'DELETE_USER_TRIP', orderId: deletedTrip.orderId, userTrips: userTrips })
+  function deleteTripHandler(orderId:string, tripId:string, amountOfTickets:number) {
+    updateUserData({ uid, type: 'DELETE_USER_TRIP', orderId: orderId, userTrips: userTrips })
     upDateTripInfo({
-      id: deletedTrip.tripId,
+      id: tripId,
       type: 'DELETE_ORDER',
       seats: AllTrips.filter(trip => {
         if (trip._id === selectedTrip.tripId) {
           return trip.seats
         }
       })[0].seats,
-      orderId: deletedTrip.orderId,
+      orderId: orderId,
       availableSeats: AllTrips.filter(trip => {
         if (trip._id === selectedTrip.tripId) {
           return trip.availableSeats
@@ -314,9 +344,52 @@ const PersonalAccount = () => {
           return trip.reservedSeats
         }
       })[0].reservedSeats,
-      amountOfTickets: deletedTrip.amountOfTickets
+      amountOfTickets: amountOfTickets
     })
   }
+////////////////////////////////////////////////////////////////////
+
+
+
+  function deletePassenger(passengerID: string) {
+    let obj = userPassengers.filter((passenger) => {
+      if (passenger.id !== passengerID) {
+        return passenger
+      }
+    })
+    updateUserData({ uid, type: 'DELETE_USER_PASSENGER', passengers: obj })
+  }
+  function upDateUserPassenger() {
+    updateUserData({
+      id: selectedUserPassenger.id,
+      userPassengers,
+      type: 'UPDATE_USER_PASSENGERS',
+      uid,
+      surname: selectedUserPassenger.surname,
+      name: selectedUserPassenger.name,
+      patronymic: selectedUserPassenger.patronymic,
+      gender: selectedUserPassenger.gender,
+      documentNumber: selectedUserPassenger.documentNumber,
+      birthDate: selectedUserPassenger.birthDate
+    })
+  }
+  function AddUserPassenger() {
+    updateUserData({
+      type: 'ADD_USER_PASSENGERS',
+      uid,
+      surname: selectedUserPassenger.surname,
+      name: selectedUserPassenger.name,
+      patronymic: selectedUserPassenger.patronymic,
+      gender: selectedUserPassenger.gender,
+      documentNumber: selectedUserPassenger.documentNumber,
+      birthDate: selectedUserPassenger.birthDate
+    })
+  }
+
+
+  useEffect(() => {
+ 
+  }, [isUpdateSuccess, UpdateUserData])
 
   return (
     <>
@@ -408,6 +481,11 @@ const PersonalAccount = () => {
             isEditPassengerInfo={isEditPassengerInfo}
             setIsEditPassengerInfo={setIsEditPassengerInfo}
             setUserPassengers={setUserPassengers}
+            setSelectedUserPassenger={setSelectedUserPassenger}
+            selectedUserPassenger={selectedUserPassenger}
+            deletePassenger={deletePassenger}
+            upDateUserPassenger={upDateUserPassenger}
+            AddUserPassenger={AddUserPassenger}
           ></Passengers>
         </TabPanel>
         <TabPanel value={value} index={3}>

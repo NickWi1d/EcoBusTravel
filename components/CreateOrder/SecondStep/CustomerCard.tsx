@@ -85,6 +85,8 @@ const CustomerCard = ({
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     onFocus={(e) => e.target.select()}
                     helperText="Сообщим об изменениях рейса"
+                    inputProps={{ pattern: "^\\+375\\(\\d{2}\\)\\d{3}-\\d{2}-\\d{2}$" }}
+                    placeholder='+375(XX)YYY-YY-YY'
                 />
                 <TextField
                     required
@@ -96,6 +98,7 @@ const CustomerCard = ({
                     onChange={(e) => setEmail(e.target.value)}
                     onFocus={(e) => e.target.select()}
                     helperText="Отправим билет и чек"
+                    inputProps={{ pattern: "^[a-zA-Z0-9._%+-]+@gmail\\.com$" }}
                 />
             </div>
         </div>

@@ -24,7 +24,7 @@ const handleRegistration = async (req: NextApiRequest, res: NextApiResponse, db:
       console.log('ok')
       if (!userEmail) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const addUser = await db.collection('Users').insertOne({ username, password: hashedPassword, email, surname: surname, name: name, phoneNumber:phoneNumber, passengers: passengers, trips: trips });
+        const addUser = await db.collection('Users').insertOne({ username, password: hashedPassword, email, surname: surname, name: name, phoneNumber: phoneNumber, passengers: passengers, trips: trips });
         return res.status(200).json({ message: 'Registration successful', addUser, username });
       } else {
         console.log('Данный email занят')
@@ -89,9 +89,9 @@ const handleDelete = async (req: NextApiRequest, res: NextApiResponse, db: Db) =
       const uidObj = new ObjectId(uid)
       const deleteUser = await db.collection('Users').deleteOne({ "_id": uidObj });
       if (deleteUser.deletedCount === 1) {
-       return res.status(200).json({ message: 'User successfully deleted' });
+        return res.status(200).json({ message: 'User successfully deleted' });
       } else {
-       return res.status(404).json({ message: 'User not found or already deleted' });
+        return res.status(404).json({ message: 'User not found or already deleted' });
       }
 
     } else {
@@ -110,8 +110,8 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse, db: Db) =
     console.log(uid)
     if (uid) {
       if (type === 'UPDATE_INFO') {
-        const { username, surname, email, name, phoneNumber } = req.body as { username: string, surname: string, password: string, email: string, name: string, phoneNumber:string }
-        const updateUser = await db.collection('Users').updateOne({ _id: new ObjectId(uid) }, { $set: { username: username, surname: surname, email: email, name: name, phoneNumber:phoneNumber } });
+        const { username, surname, email, name, phoneNumber } = req.body as { username: string, surname: string, password: string, email: string, name: string, phoneNumber: string }
+        const updateUser = await db.collection('Users').updateOne({ _id: new ObjectId(uid) }, { $set: { username: username, surname: surname, email: email, name: name, phoneNumber: phoneNumber } });
         if (updateUser.modifiedCount === 1) {
           return res.status(200).json({ message: 'User successfully updated' })
         } else if (updateUser.matchedCount === 0) {
@@ -135,18 +135,41 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse, db: Db) =
           return res.status(401).json({ message: 'Incorrect password' });
         }
       } else if (type === 'UPDATE_USER_PASSENGERS') {
-        const { id, passengerIndex, surname, name, patronymic, gender, documentNumber, birthDate } = req.body as { id: string, passengerIndex: number, surname: string, name: string, patronymic: string, gender: string, documentNumber: string, birthDate: string }
+        const { id, userPassengers, surname, name, patronymic, gender, documentNumber, birthDate } = req.body as { id: string, userPassengers: Passenger[], surname: string, name: string, patronymic: string, gender: string, documentNumber: string, birthDate: string }
         const updateUserPassenger = await db.collection('Users').updateOne({ _id: new ObjectId(uid) }, {
           $set: {
-            [`passengers.${passengerIndex}`]: {
-              id: id,
-              surname: surname,
-              name: name,
-              patronymic: patronymic,
-              gender: gender,
-              documentNumber: documentNumber,
-              birthDate: birthDate
-            }
+            // [`passengers.${passengerIndex}`]: {
+            //   id: id,
+            //   surname: surname,
+            //   name: name,
+            //   patronymic: patronymic,
+            //   gender: gender,
+            //   documentNumber: documentNumber,
+            //   birthDate: birthDate
+            // }
+            passengers: userPassengers.map(userPassenger => {
+              if (userPassenger.id === id) {
+                return {
+                  id: id,
+                  surname: surname,
+                  name: name,
+                  patronymic: patronymic,
+                  gender: gender,
+                  documentNumber: documentNumber,
+                  birthDate: birthDate
+                }
+              }else{
+                return {
+                  id: userPassenger.id,
+                  surname: userPassenger.surname,
+                  name: userPassenger.name,
+                  patronymic: userPassenger.patronymic,
+                  gender: userPassenger.gender,
+                  documentNumber: userPassenger.documentNumber,
+                  birthDate: userPassenger.birthDate 
+                }
+              }
+            })
           }
         })
         if (updateUserPassenger.modifiedCount === 1) {
@@ -270,7 +293,7 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse, db: Db) =
       }
       else if (type === 'FULL_UPDATE_USER_INFO') {
         const { user } = req.body as { user: IUser }
-        
+
         const fullUpDateUserInfo = await db.collection('Users').updateOne(
           { _id: new ObjectId(uid) },
           {
@@ -279,12 +302,12 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse, db: Db) =
               surname: user.surname,
               email: user.email,
               name: user.name,
-              phoneNumber:user.phoneNumber,
+              phoneNumber: user.phoneNumber,
               trips: [...user.trips.map(trip => {
                 console.log('seats', trip.seats);
-                
+
                 return {
-                  orderId:trip.orderId,
+                  orderId: trip.orderId,
                   tripId: trip.tripId,
                   seats: trip.seats
                 }
@@ -303,7 +326,7 @@ const handleUpdate = async (req: NextApiRequest, res: NextApiResponse, db: Db) =
         console.log(passengers)
         const deleteUserPassenger = await db.collection('Users').updateOne({ _id: new ObjectId(uid) }, { $set: { passengers: passengers } });
         if (deleteUserPassenger.modifiedCount === 1) {
-          return res.status(200).json({ message: 'Passenger was successfully updated' });
+          return res.status(200).json({ message: 'Passenger was successfully deleted' });
         } else if (deleteUserPassenger.matchedCount === 0) {
           return res.status(404).json({ message: 'User not found' });
         } else {

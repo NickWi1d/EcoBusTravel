@@ -68,17 +68,17 @@ const ShowTripInfo = ({
     selectedUserTrip,
     setTrips,
     setDeletedTrip,
-    setIsDeleteTrip,
     name,
-    email
+    email,
+    deleteTripHandler
 }: {
     setIsShowUserTripInfo: React.Dispatch<React.SetStateAction<boolean>>,
     selectedUserTrip: CustomUserTrip,
     setTrips: React.Dispatch<React.SetStateAction<UserTrip[] | []>>,
     setDeletedTrip: React.Dispatch<React.SetStateAction<DeletedTrips>>,
-    setIsDeleteTrip: React.Dispatch<React.SetStateAction<boolean>>,
     name: string,
-    email: string
+    email: string,
+    deleteTripHandler:(orderId:string, tripId:string, amountOfTickets:number)=>void
 }) => {
     const [sendEmail, { data: sendEmailResult, isSuccess: sendEmailSuccess }] = useSendEmailMutation()
 
@@ -88,7 +88,6 @@ const ShowTripInfo = ({
 
 
     function cancelUserTrip() {
-        setIsDeleteTrip(true)
         setDeletedTrip(prev => {
             return {
                 orderId: selectedUserTrip.orderId,
@@ -96,6 +95,7 @@ const ShowTripInfo = ({
                 amountOfTickets: selectedUserTrip.seats.length
             }
         })
+        deleteTripHandler(selectedUserTrip.orderId, selectedUserTrip.tripId, selectedUserTrip.seats.length)
         setIsShowUserTripInfo(false)
     }
 

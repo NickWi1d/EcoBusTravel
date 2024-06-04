@@ -27,6 +27,7 @@ interface Info {
     phoneNumber: string
 }
 
+
 const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, surname, name, username, showAlert, setShowAlert, alertType, alertText, updateUserInfoHandler, setPhoneNumber, phoneNumber }) => {
     return (
         <form className={styles.infoForm} onSubmit={updateUserInfoHandler}>
@@ -81,6 +82,7 @@ const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, sur
                 variant="outlined"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                inputProps={{ pattern: "^[a-zA-Z0-9._%+-]+@gmail\\.com$" }}
             />
             <TextField
                 className={styles.emailInput}
@@ -91,6 +93,8 @@ const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, sur
                 variant="outlined"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                inputProps={{ pattern: "^\\+375\\(\\d{2}\\)\\d{3}-\\d{2}-\\d{2}$" }}
+                placeholder='+375(XX)YYY-YY-YY'
             />
             <Button variant="contained" type='submit' className={styles.SaveBtn}>Сохранить</Button>
         </form>

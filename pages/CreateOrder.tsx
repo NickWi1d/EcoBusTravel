@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FC } from 'react'
+import React, { useEffect, useState, FC, useRef } from 'react'
 import { useRouter } from 'next/router';
 import styles from '@/styles/CreateOrder.module.scss'
 import { Stepper, Step, Box, StepButton, Button, Typography } from '@mui/material'
@@ -23,16 +23,19 @@ const CreateOrder: FC = () => {
     const [upDateUserInfo, { isSuccess: isUpDateUserInfoSuccess, data: upDateUserInfoMessage, isError: isUpDateUserInfoError, error: UpDateUserInfoError }] = useUpDateUserInfoMutation()
 
     const router = useRouter();
+
+    const formRef = useRef<HTMLFormElement>(null);
+
     const [tripData, setTripData] = useState<BusTrip | undefined>(undefined)
     const [busInfo, setBusInfo] = useState<Bus | undefined>(undefined)
 
-    const [user, setUser] = useState<{ uid: string, username: string, name: string, surname: string, email: string, phoneNumber:string }>({
+    const [user, setUser] = useState<{ uid: string, username: string, name: string, surname: string, email: string, phoneNumber: string }>({
         uid: '',
         username: '',
         name: '',
         surname: '',
         email: '',
-        phoneNumber:''
+        phoneNumber: ''
     })
     const [customer, setCustomer] = useState<Customer>({
         surname: '',
@@ -109,7 +112,7 @@ const CreateOrder: FC = () => {
                 price: price,
                 seats: updatedSeats,
             };
-            getBusInfo({id:queryParams.busNumber})
+            getBusInfo({ id: queryParams.busNumber })
             setTripData(updatedTripData as BusTrip);
             console.log('куку', updatedTripData)
         }
@@ -133,16 +136,16 @@ const CreateOrder: FC = () => {
     useEffect(() => {
         if (isGetUserDataSuccess && UserData) {
             setUserPassengers(UserData.user.passengers)
-            setUser(prev => { return { ...prev, name: UserData.user.name, surname: UserData.user.surname, email: UserData.user.email, phoneNumber:UserData.user.phoneNumber } })
+            setUser(prev => { return { ...prev, name: UserData.user.name, surname: UserData.user.surname, email: UserData.user.email, phoneNumber: UserData.user.phoneNumber } })
         }
     }, [isGetUserDataSuccess, UserData])
 
     useEffect(() => {
-        if(isGetBusInfoSuccess && BusInfo){
+        if (isGetBusInfoSuccess && BusInfo) {
             setBusInfo(BusInfo.bus)
         }
     }, [isGetBusInfoSuccess, BusInfo])
-    
+
 
     useEffect(() => {
         getParams()
@@ -165,7 +168,7 @@ const CreateOrder: FC = () => {
     useEffect(() => {
         checkTheDataFilling()
     }, [currentPassengers, customer, loading])
-    
+
 
     const [activeStep, setActiveStep] = useState(1);
     const [completed, setCompleted] = useState<{
@@ -216,11 +219,65 @@ const CreateOrder: FC = () => {
         setActiveStep(step);
     };
 
-    const handleComplete = () => {
-        if (completedSteps() === totalSteps() - 1) {
-            confirmTrip()
-        } else if (completedSteps() === 1) {
-            setLoading(true)
+    const handleButtonClick = () => {
+        if (formRef.current) {
+            formRef.current.submit();
+        }
+    };
+
+    // const handleComplete = () => {
+    //     if (completedSteps() === totalSteps() - 1) {
+    //         confirmTrip()
+    //     } else if (completedSteps() === 1) {
+    //         setLoading(true)
+    //         setTimeout(() => {
+    //             if (amountOfTickets === selectedSeats.length) {
+    //                 setShowAlert(false)
+    //                 setIsAllSeatsSelected(true)
+    //                 const newCompleted = completed
+    //                 newCompleted[activeStep] = true
+    //                 setCompleted(newCompleted)
+    //                 handleNext()
+
+    //             } else {
+    //                 setIsAllSeatsSelected(false)
+    //             }
+    //             setLoading(false)
+    //         }, 1000);
+    //     }
+    //     // else if (completedSteps() === 2) {
+    //     //     setLoading(true)
+    //     //     setTimeout(() => {
+    //     //         // checkTheDataFilling()
+    //     //         // if (isFullDataFilled) {
+    //     //             setShowAlert(false)
+    //     //             const newCompleted = completed
+    //     //             newCompleted[activeStep] = true
+    //     //             setCompleted(newCompleted)
+    //     //             if (formRef.current) {
+    //     //                 formRef.current.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    //     //             }
+    //     //             handleNext()
+    //     //         // } else {
+    //     //         //     if (!isFullDataFilled) {
+    //     //         //         setType('warning')
+    //     //         //         setText('Заполните все поля!')
+    //     //         //         setShowAlert(true)
+    //     //         //     }
+    //     //         //     //  else if (!isCustomerDataFilled) {
+    //     //         //     //     setType('warning')
+    //     //         //     //     setText('Заполните данные заказчика!')
+    //     //         //     //     setShowAlert(true)
+    //     //         //     // }
+    //     //         // }
+    //     //         setLoading(false)
+    //     //     }, 1000);
+
+    //     // }
+    // };
+
+    function firstStepHandler() {
+        setLoading(true)
             setTimeout(() => {
                 if (amountOfTickets === selectedSeats.length) {
                     setShowAlert(false)
@@ -235,34 +292,20 @@ const CreateOrder: FC = () => {
                 }
                 setLoading(false)
             }, 1000);
-        } else if (completedSteps() === 2) {
-            setLoading(true)
-            setTimeout(() => {
-                checkTheDataFilling()
-                if (isFullDataFilled) {
-                    setShowAlert(false)
-                    const newCompleted = completed
-                    newCompleted[activeStep] = true
-                    setCompleted(newCompleted)
-                    handleNext()
-                } else {
-                    if (!isFullDataFilled) {
-                        setType('warning')
-                        setText('Заполните все поля!')
-                        setShowAlert(true)
-                    }
-                    //  else if (!isCustomerDataFilled) {
-                    //     setType('warning')
-                    //     setText('Заполните данные заказчика!')
-                    //     setShowAlert(true)
-                    // }
-                }
-                setLoading(false)
-            }, 1000);
+    }
 
-        }
-    };
-
+    function secondStepHandler() {
+        setLoading(true)
+        setTimeout(() => {
+            setShowAlert(false)
+            const newCompleted = completed
+            newCompleted[activeStep] = true
+            setCompleted(newCompleted)
+            handleNext()
+            setLoading(false)
+        }, 1000);
+    }
+    
     const handleReset = () => {
         setActiveStep(1);
         setCompleted({ 0: true });
@@ -288,6 +331,8 @@ const CreateOrder: FC = () => {
             setCompleted({ 0: true, 1: true, 2: true })
         }
     }
+
+
 
     return (
         <div>
@@ -338,6 +383,9 @@ const CreateOrder: FC = () => {
                                 user={user}
                                 currentPassengers={currentPassengers}
                                 customer={customer}
+                                loading={loading}
+                                activeStep={activeStep}
+                                secondStepHandler={secondStepHandler}
                             ></SecondStep>}
                             {activeStep == 3 && <CompletionStep
                                 currentPassengers={currentPassengers}
@@ -346,13 +394,10 @@ const CreateOrder: FC = () => {
                             ></CompletionStep>}
                             <Box sx={{ pt: 2 }}>
                                 <Box sx={{ flex: '1 1 auto' }} />
-                                {completedSteps() !== totalSteps() - 1
+                                {completedSteps() === 1
                                     &&
-                                    // <Button onClick={handleComplete} sx={{ mr: 1 }} variant='contained' className={styles.Btn}>
-                                    //     {activeStep === 1 ? 'Продолжить оформление' : 'Перейти к оплате'}
-                                    // </Button>
                                     <LoadingButton
-                                        onClick={handleComplete}
+                                        onClick={firstStepHandler}
                                         endIcon={<SendIcon />}
                                         loading={loading}
                                         loadingPosition="end"
@@ -360,12 +405,12 @@ const CreateOrder: FC = () => {
                                         className={`${styles.Btn} mb-[2%]`}
                                         sx={{ mr: 1 }}
                                     >
-                                        {activeStep === 1 ? 'Продолжить оформление' : 'Перейти к оплате'}
+                                        Продолжить оформление
                                     </LoadingButton>}
                                 {completedSteps() === totalSteps() - 1
                                     &&
                                     <LoadingButton
-                                        onClick={handleComplete}
+                                        onClick={confirmTrip}
                                         endIcon={<SendIcon />}
                                         loading={loading}
                                         loadingPosition="end"

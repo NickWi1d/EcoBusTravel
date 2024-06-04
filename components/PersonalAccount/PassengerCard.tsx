@@ -5,8 +5,18 @@ import { IconButton, SelectChangeEvent } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const PassengerCard = ({ index, passenger, openAddPassengerWindow, deletePassenger }: { index: number, passenger: Passenger, openAddPassengerWindow: (event: MouseEvent<HTMLButtonElement>, passenger: Passenger, index: number) => void,  deletePassenger:()=>void}) => {
-   
+const PassengerCard = ({ 
+    index, 
+    passenger, 
+    openAddPassengerWindow, 
+    deletePassenger 
+}: { 
+    index: number, 
+    passenger: Passenger, 
+    openAddPassengerWindow: (event: MouseEvent<HTMLButtonElement>, passenger: Passenger, index: number) => void,  
+    deletePassenger:(passengerId:string)=>void
+}) => {
+
     return (
 
         <div className={styles.passengerInfo}>
@@ -16,7 +26,7 @@ const PassengerCard = ({ index, passenger, openAddPassengerWindow, deletePasseng
                     <IconButton color='inherit' onClick={(event) => openAddPassengerWindow(event, passenger, index)} >
                         <EditIcon></EditIcon>
                     </IconButton>
-                    <IconButton color='inherit' onClick={() => deletePassenger()}>
+                    <IconButton color='inherit' onClick={() => deletePassenger(passenger.id)}>
                         <DeleteIcon></DeleteIcon>
                     </IconButton>
                 </div>

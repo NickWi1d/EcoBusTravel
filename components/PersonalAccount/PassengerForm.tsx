@@ -59,7 +59,7 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                 <FormControl required>
                     <FormLabel id="demo-row-radio-buttons-group-label">Пол</FormLabel>
                     <RadioGroup
-                        
+
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
@@ -84,6 +84,8 @@ const PassengerForm: FC<PassengerFormProps> = ({ birthDate, documentNumber, gend
                     // InputLabelProps={{
                     //     shrink: true,
                     // }}
+                    inputProps={{ pattern: "^МР\\d{7}$" }}
+                    placeholder='МРXXXXXXX'
                 />
                 <TextField
                     required
