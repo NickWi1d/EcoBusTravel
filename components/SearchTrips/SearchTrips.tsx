@@ -18,7 +18,7 @@ export const SearchTrips = ({ cities }: { cities: string[] }) => {
     const handleSubmit = (e: FormEvent<HTMLFormElement>, params: Params) => {
         e.preventDefault();
         const queryString = new URLSearchParams(Object.fromEntries(
-            Object.entries(params).filter(([_, value]) => value.trim() !== '')
+            Object.entries(params).filter(([_, value]) => value.toString().trim() !== '')
         ));
         console.log(queryString);
         router.push(`/SearchResults?${queryString}`);
