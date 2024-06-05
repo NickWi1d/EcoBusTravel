@@ -1,10 +1,11 @@
 import { CustomUserTrip, DeletedTrips, UserTrip } from '@/types/types'
 import { Box } from '@mui/material'
-import { DataGrid, GridColDef, useGridApiRef, gridClasses, GridRowParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, useGridApiRef, gridClasses, GridRowParams, GridLocaleText } from '@mui/x-data-grid';
 import React, { useEffect, useState } from 'react'
 import ShowUserTripInfo from '../AdminPanel/Users/ShowUserTripInfo';
 import ShowTripInfo from './ShowTripInfo';
 import Modal from '../ModalWindows/Modal';
+import { ruRU } from '@mui/x-data-grid/locales';
 
 const TripListColumns: GridColDef[] = [
     {
@@ -63,8 +64,7 @@ const Trips = ({
     const [isShowTripInfo, setIsShowTripInfo] = useState(false)
     // const [isDeleteTrip, setIsDeleteTrip] = useState(false)
 
-
-
+   
 
     const TripListRows = userTrips.map(trip => {
         return {
@@ -145,6 +145,13 @@ const Trips = ({
                     rows={TripListRows}
                     columns={TripListColumns}
                     onRowClick={(params) => showTripInfo(params)}
+                    localeText={{
+                        ...ruRU.components.MuiDataGrid.defaultProps.localeText,
+                        noRowsLabel: 'Нет строк',
+                        footerRowSelected: count => `${count.toLocaleString()} строк выбрано`,
+                        footerTotalVisibleRows: (visibleCount, totalCount) =>
+                          `${visibleCount.toLocaleString()} из ${totalCount.toLocaleString()}`,
+                    }}
                 />
             </Box>
         </div>

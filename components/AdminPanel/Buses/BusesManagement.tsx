@@ -6,7 +6,7 @@ import styles from '@/styles/Admin.module.scss'
 import { Bus, typeOfBus } from '@/types/types';
 import EditBusInfo from './EditBusInfo';
 import Modal from '@/components/ModalWindows/Modal';
-
+import { ruRU } from '@mui/x-data-grid/locales';
 
 
 const columns: GridColDef[] = [
@@ -157,6 +157,13 @@ const BusesManagement = ({
           rows={rows}
           columns={columns}
           onRowClick={(params) => openBusEditor(params)}
+          localeText={{
+            ...ruRU.components.MuiDataGrid.defaultProps.localeText,
+            noRowsLabel: 'Нет строк',
+            footerRowSelected: count => `${count.toLocaleString()} строк выбрано`,
+            footerTotalVisibleRows: (visibleCount, totalCount) =>
+              `${visibleCount.toLocaleString()} из ${totalCount.toLocaleString()}`,
+        }}
         />
       </Box>
     </>

@@ -39,7 +39,7 @@ const Info: FC<Info> = ({ setUsername, setName, setSurname, setEmail, email, sur
                     text={alertText}
                 />
             )}
-            <p ><strong>Login: </strong>{username}</p>
+            <p ><strong>Логин: </strong>{username}</p>
             {/* <TextField
                 className={styles.emailInput}
                 margin='normal'

@@ -12,6 +12,7 @@ import Modal from '../../ModalWindows/Modal';
 import { useDeleteMutation, useDeletePassengerMutation, useUpDateUserInfoMutation } from '@/store/reducers/api/app';
 import { DataGrid, GridColDef, useGridApiRef, gridClasses, GridRowParams } from '@mui/x-data-grid';
 import EditUserInfo from './EditUserInfo';
+import { ruRU } from '@mui/x-data-grid/locales';
 
 const columns: GridColDef[] = [
   {
@@ -186,6 +187,13 @@ const UsersManagement = ({
           rows={rows}
           columns={columns}
           onRowClick={(params) => openUserEditor(params)}
+          localeText={{
+            ...ruRU.components.MuiDataGrid.defaultProps.localeText,
+            noRowsLabel: 'Нет строк',
+            footerRowSelected: count => `${count.toLocaleString()} строк выбрано`,
+            footerTotalVisibleRows: (visibleCount, totalCount) =>
+              `${visibleCount.toLocaleString()} из ${totalCount.toLocaleString()}`,
+        }}
         />
       </Box>
     </>

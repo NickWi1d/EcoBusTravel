@@ -27,6 +27,17 @@ export const SearchTrips = ({ cities }: { cities: string[] }) => {
 
     const currentDate = new Date().toISOString().split('T')[0];
 
+    const handleBlurFromField = () => {
+        if (!cities.includes(from)) {
+            setFrom('');
+        }
+    };
+    const handleBlurToField = () => {
+        if (!cities.includes(to)) {
+            setTo('');
+        }
+    };
+
     return (
         <div className='SearchSection'>
             <div className='SearchTitle'>
@@ -62,7 +73,8 @@ export const SearchTrips = ({ cities }: { cities: string[] }) => {
                             label="Откуда?"
                             variant="outlined"
                             onChange={(e) => setFrom(e.target.value)}
-                            onFocus={(e) => e.target.select()} />}
+                            onFocus={(e) => e.target.select()} 
+                            onBlur={handleBlurFromField}/>}
                     />
 
                 </div>
@@ -85,7 +97,8 @@ export const SearchTrips = ({ cities }: { cities: string[] }) => {
                             label="Куда?"
                             variant="outlined"
                             onChange={(e) => setTo(e.target.value)}
-                            onFocus={(e) => e.target.select()} />}
+                            onFocus={(e) => e.target.select()} 
+                            onBlur={handleBlurToField}/>}
                     />
                     
                 </div>

@@ -9,6 +9,7 @@ import { useUpDateUserInfoMutation } from '@/store/reducers/api/app';
 import PassengerCard from './PassengerCard';
 import { useRouter } from 'next/router';
 import { DataGrid, GridColDef, useGridApiRef, gridClasses, GridRowParams } from '@mui/x-data-grid';
+import { ruRU } from '@mui/x-data-grid/locales';
 
 
 const PassengersListColumns: GridColDef[] = [
@@ -135,6 +136,13 @@ const Passengers = ({
           rows={PassengerListRows}
           columns={PassengersListColumns}
           onRowClick={(params) => openAddPassengerWindow(params)}
+          localeText={{
+            ...ruRU.components.MuiDataGrid.defaultProps.localeText,
+            noRowsLabel: 'Нет строк',
+            footerRowSelected: count => `${count.toLocaleString()} строк выбрано`,
+            footerTotalVisibleRows: (visibleCount, totalCount) =>
+              `${visibleCount.toLocaleString()} из ${totalCount.toLocaleString()}`,
+        }}
         />
       </Box>
 

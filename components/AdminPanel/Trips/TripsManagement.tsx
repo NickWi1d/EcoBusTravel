@@ -6,6 +6,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
 import { DataGrid, GridColDef, GridEventListener, useGridApiRef, gridClasses, MuiEvent, GridRowParams, GridCallbackDetails } from '@mui/x-data-grid';
+import { ruRU } from '@mui/x-data-grid/locales';
 
 interface BusTripExtended extends BusTrip {
     warning: boolean;
@@ -182,6 +183,13 @@ const TripsManagement = (
                     rows={rows}
                     columns={columns}
                     onRowClick={(params) => openTripEditor(params)}
+                    localeText={{
+                        ...ruRU.components.MuiDataGrid.defaultProps.localeText,
+                        noRowsLabel: 'Нет строк',
+                        footerRowSelected: count => `${count.toLocaleString()} строк выбрано`,
+                        footerTotalVisibleRows: (visibleCount, totalCount) =>
+                          `${visibleCount.toLocaleString()} из ${totalCount.toLocaleString()}`,
+                    }}
                 />
             </Box>
             {/* <List
