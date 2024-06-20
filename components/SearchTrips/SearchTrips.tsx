@@ -41,7 +41,7 @@ export const SearchTrips = ({ cities }: { cities: string[] }) => {
     return (
         <div className='SearchSection'>
             <div className='SearchTitle'>
-                <h2>Купить билет на автобус</h2>
+                <h2 >Купить билет на автобус</h2>
                 <h4>по Беларуси</h4>
             </div>
             <form

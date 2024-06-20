@@ -6,7 +6,7 @@ import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
 
 const About = () => {
     return (
-        <div className='w-[100%] h-[400px] flex flex-col items-center justify-center'>
+        <div className=' sm:h-[500pх] w-[100%] h-[400px] flex flex-col items-center justify-center'>
             <Typography variant="h4" gutterBottom sx={{ width: '80%' }}>
                 О нас
             </Typography>
