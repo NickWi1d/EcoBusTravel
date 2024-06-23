@@ -626,7 +626,7 @@ const EditTripInfo = ({
 								// required
 								id='departure'
 								type='text'
-								label='Пункт назначения'
+								label='Пункт отправки'
 								variant='outlined'
 								value={departure}
 								onChange={e => setDeparture(e.target.value)}
@@ -636,7 +636,7 @@ const EditTripInfo = ({
 								// required
 								id='destination'
 								type='text'
-								label='Пункт отправки'
+								label='Пункт назначения'
 								variant='outlined'
 								value={destination}
 								onChange={e => setDestination(e.target.value)}
